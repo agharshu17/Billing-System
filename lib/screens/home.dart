@@ -116,7 +116,9 @@ class _HomeState extends State<Home> {
                 } else if (index == 4) {
                   Navigator.of(context).push(
                       MaterialPageRoute<Null>(builder: (BuildContext context) {
-                    return new Billing();
+                    return new PartyBroker(
+                      email: email,
+                    );
                   }));
                 } else if (index == 5) {
                   Navigator.of(context).pushNamed('/Documents');
