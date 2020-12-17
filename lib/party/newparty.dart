@@ -35,27 +35,32 @@ class _RegisterState extends State<NewParty> {
   TextEditingController mobileContactInputController;
   TextEditingController fssaiInputController;
   TextEditingController gstInputController;
-  bool _iscreated;
+  bool _iscreated = false;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    Firebase.initializeApp();
-    FirebaseFirestore.instance
+    firebaseFunctToGetAllParties();
+  }
+
+  Future<void> firebaseFunctToGetAllParties() async {
+    await FirebaseFirestore.instance
         .collection('Company')
         .doc(widget.email)
         .collection('Party Name')
         .get()
         .then((querySnapshot) {
-      if (querySnapshot.docs.length == 0) {
-        _iscreated = false;
-      } else {
-        _iscreated = true;
-        querySnapshot.docs.forEach((result) {
-          info.add(result.data());
-        });
-      }
+      setState(() {
+        if (querySnapshot.docs.length == 0) {
+          _iscreated = false;
+        } else {
+          _iscreated = true;
+          querySnapshot.docs.forEach((result) {
+            info.add(result.data());
+          });
+        }
+      });
     });
   }
 
@@ -265,26 +270,10 @@ class _RegisterState extends State<NewParty> {
               padding: const EdgeInsets.all(20),
               onPressed: () async {
                 if (_formKey.currentState.validate()) {
-                  FirebaseFirestore.instance
-                      .collection("Company")
-                      .doc(widget.email)
-                      .collection('Party Name')
-                      .doc(name)
-                      .set({
-                    "Name": name,
-                    "Address": {
-                      "Office": office_address,
-                    },
-                    "Contact": {
-                      "Mobile": mobile_contact,
-                      "Office": office_contact,
-                    },
-                    "Email": email,
-                    "Tax": {
-                      "GST No.": gst,
-                      "FSSAI No.": fssai,
-                    },
-                  }, SetOptions(merge: true)).then((value) {
+                  Database(email: widget.email)
+                      .createNewParty(name, email, office_address,
+                          office_contact, mobile_contact, fssai, gst)
+                      .then((value) {
                     showDialog(
                         context: context,
                         builder: (BuildContext context) {
@@ -294,18 +283,22 @@ class _RegisterState extends State<NewParty> {
                                   'Your data has been successfully saved!',
                               text: 'OK');
                         });
-
-                    nameInputController = new TextEditingController(text: "");
-                    emailInputController = new TextEditingController(text: "");
-                    officeAddressInputController =
-                        new TextEditingController(text: "");
-                    mobileContactInputController =
-                        new TextEditingController(text: "");
-                    officeContactInputController =
-                        new TextEditingController(text: "");
-                    fssaiInputController = new TextEditingController(text: "");
-                    name = email = office_address =
-                        mobile_contact = office_contact = fssai = gst = "";
+                    setState(() {
+                      nameInputController = new TextEditingController(text: "");
+                      emailInputController =
+                          new TextEditingController(text: "");
+                      officeAddressInputController =
+                          new TextEditingController(text: "");
+                      mobileContactInputController =
+                          new TextEditingController(text: "");
+                      officeContactInputController =
+                          new TextEditingController(text: "");
+                      fssaiInputController =
+                          new TextEditingController(text: "");
+                      gstInputController = new TextEditingController(text: "");
+                      name = email = office_address =
+                          mobile_contact = office_contact = fssai = gst = "";
+                    });
                   }).catchError((e) {
                     print(e);
                   });

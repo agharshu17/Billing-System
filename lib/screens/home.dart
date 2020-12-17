@@ -5,6 +5,7 @@ import 'package:billing_system/home/party.dart';
 import 'package:billing_system/home/product.dart';
 import 'package:billing_system/home/profile.dart';
 import 'package:billing_system/home/transportation.dart';
+import 'package:billing_system/services/auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +17,7 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   var info;
-  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  final AuthService _authService = AuthService();
   var email;
   @override
   void initState() {
@@ -138,8 +139,7 @@ class _HomeState extends State<Home> {
           icon: const Icon(Icons.account_box),
           tooltip: 'Sign Out',
           onPressed: () async {
-            await _firebaseAuth.signOut();
-            Navigator.popUntil(context, ModalRoute.withName("/"));
+            await _authService.signOut();
           },
         ),
         actions: <Widget>[
@@ -151,7 +151,7 @@ class _HomeState extends State<Home> {
               //Profile page
               Navigator.of(context).push(
                   MaterialPageRoute<Null>(builder: (BuildContext context) {
-                return new Profile(
+                return Profile(
                   email: email,
                 );
               }));

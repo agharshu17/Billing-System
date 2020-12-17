@@ -1,9 +1,8 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
+import 'package:billing_system/screens/home.dart';
+import 'package:billing_system/services/auth.dart';
+import 'package:billing_system/shared/loading.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:billing_system/services/database.dart';
 
 class SignIn extends StatefulWidget {
   @override
@@ -12,6 +11,7 @@ class SignIn extends StatefulWidget {
 
 class _SignINState extends State<SignIn> {
   final _formKey = GlobalKey<FormState>();
+  final AuthService _authService = AuthService();
   bool loading = false;
   bool flag = false;
   final scaffoldKey = new GlobalKey<ScaffoldState>();
@@ -30,7 +30,6 @@ class _SignINState extends State<SignIn> {
     pwdInputController = new TextEditingController();
 
     super.initState();
-    Firebase.initializeApp();
   }
 
   String emailValidator(String value) {
@@ -58,136 +57,145 @@ class _SignINState extends State<SignIn> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async => false,
-      child: Scaffold(
-          resizeToAvoidBottomPadding: false,
-          backgroundColor: Colors.white,
-          body: SingleChildScrollView(
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Container(
-                    padding: const EdgeInsets.only(
-                        top: 150, right: 50, left: 50, bottom: 150),
-                    child: Form(
-                      key: _formKey,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          TextFormField(
-                            onChanged: (value) {
-                              setState(() {
-                                email = value;
-                              });
-                            },
-                            validator: (val) => emailValidator(val),
-                            controller: emailInputController,
-                            keyboardType: TextInputType.emailAddress,
-                            decoration: InputDecoration(
-                                prefixIcon: Icon(
-                                  Icons.mail,
-                                  color: Colors.blue[400],
-                                ),
-                                labelText: "Email ID",
-                                hintText: "john.doe@gmail.com",
-                                labelStyle: TextStyle(color: Colors.black)),
-                            style:
-                                TextStyle(color: Colors.black, fontSize: 20.0),
-                          ),
-                          SizedBox(
-                            height: 10.0,
-                          ),
-                          TextFormField(
-                            onChanged: (value) => {
-                              setState(() {
-                                password = value;
-                              })
-                            },
-                            controller: pwdInputController,
-                            validator: (val) => pwdValidator(val),
-                            decoration: InputDecoration(
-                              prefixIcon: Icon(
-                                Icons.lock,
-                                color: Colors.blue[400],
-                              ),
-                              labelText: "Password",
-                              hintText: "********",
-                              labelStyle: TextStyle(color: Colors.black),
-                              suffixIcon: GestureDetector(
-                                  onTap: () {
+    return loading
+        ? Loading()
+        : WillPopScope(
+            onWillPop: () async => false,
+            child: Scaffold(
+                resizeToAvoidBottomPadding: false,
+                backgroundColor: Colors.white,
+                body: SingleChildScrollView(
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Container(
+                          padding: const EdgeInsets.only(
+                              top: 150, right: 50, left: 50, bottom: 150),
+                          child: Form(
+                            key: _formKey,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                TextFormField(
+                                  onChanged: (value) {
                                     setState(() {
-                                      _showPassword = !_showPassword;
+                                      email = value;
                                     });
                                   },
-                                  child: Icon(
-                                    _showPassword
-                                        ? Icons.visibility
-                                        : Icons.visibility_off,
-                                    color: Colors.blue[400],
-                                  )),
-                            ),
-                            obscureText: !_showPassword,
-                            style:
-                                TextStyle(color: Colors.black, fontSize: 20.0),
-                          ),
-                          SizedBox(
-                            height: 50.0,
-                          ),
-                          RaisedButton(
-                              child: Text(
-                                'Login',
-                                style: TextStyle(
-                                  color: Colors.black54,
+                                  validator: (val) => emailValidator(val),
+                                  controller: emailInputController,
+                                  keyboardType: TextInputType.emailAddress,
+                                  decoration: InputDecoration(
+                                      prefixIcon: Icon(
+                                        Icons.mail,
+                                        color: Colors.blue[400],
+                                      ),
+                                      labelText: "Email ID",
+                                      hintText: "john.doe@gmail.com",
+                                      labelStyle:
+                                          TextStyle(color: Colors.black)),
+                                  style: TextStyle(
+                                      color: Colors.black, fontSize: 20.0),
                                 ),
-                              ),
-                              padding: EdgeInsets.all(10),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: new BorderRadius.circular(5.0),
-                                side: BorderSide(color: Colors.black),
-                              ),
-                              onPressed: () {
-                                if (_formKey.currentState.validate()) {
-                                  FirebaseAuth.instance
-                                      .signInWithEmailAndPassword(
-                                          email: email, password: password)
-                                      .then((user) async {
-                                    if (user != null) {
-                                      flag = true;
-                                      Navigator.of(context).pushNamed('/Home');
-                                    }
-                                  }).catchError((e) {
-                                    print(e);
-                                  });
-                                }
-                                if (flag == false) {
-                                  print('invalid');
-                                  Text('Invalid Login Credential',
-                                      style: TextStyle(color: Colors.black));
-                                }
-                              },
-                              splashColor: Colors.grey),
-                          FlatButton(
-                            color: Colors.white,
-                            child: Text(
-                              'Not a Member Yet? Sign Up Here.',
-                              style: TextStyle(
-                                color: Colors.black,
-                              ),
+                                SizedBox(
+                                  height: 10.0,
+                                ),
+                                TextFormField(
+                                  onChanged: (value) => {
+                                    setState(() {
+                                      password = value;
+                                    })
+                                  },
+                                  controller: pwdInputController,
+                                  validator: (val) => pwdValidator(val),
+                                  decoration: InputDecoration(
+                                    prefixIcon: Icon(
+                                      Icons.lock,
+                                      color: Colors.blue[400],
+                                    ),
+                                    labelText: "Password",
+                                    hintText: "********",
+                                    labelStyle: TextStyle(color: Colors.black),
+                                    suffixIcon: GestureDetector(
+                                        onTap: () {
+                                          setState(() {
+                                            _showPassword = !_showPassword;
+                                          });
+                                        },
+                                        child: Icon(
+                                          _showPassword
+                                              ? Icons.visibility
+                                              : Icons.visibility_off,
+                                          color: Colors.blue[400],
+                                        )),
+                                  ),
+                                  obscureText: !_showPassword,
+                                  style: TextStyle(
+                                      color: Colors.black, fontSize: 20.0),
+                                ),
+                                SizedBox(
+                                  height: 50.0,
+                                ),
+                                RaisedButton(
+                                    child: Text(
+                                      'Login',
+                                      style: TextStyle(
+                                        color: Colors.black54,
+                                      ),
+                                    ),
+                                    padding: EdgeInsets.all(10),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius:
+                                          new BorderRadius.circular(5.0),
+                                      side: BorderSide(color: Colors.black),
+                                    ),
+                                    onPressed: () async {
+                                      if (_formKey.currentState.validate()) {
+                                        setState(() {
+                                          loading = true;
+                                        });
+                                        dynamic result = await _authService
+                                            .signInWithEmailPassword(
+                                                email, password);
+                                        if (result == null) {
+                                          setState(() {
+                                            error =
+                                                'Sign in Failed. Please check the details!';
+                                            loading = false;
+                                          });
+                                        } else {
+                                          return Home();
+                                        }
+                                      }
+                                      if (flag == false) {
+                                        print('invalid');
+                                        Text('Invalid Login Credential',
+                                            style:
+                                                TextStyle(color: Colors.black));
+                                      }
+                                    },
+                                    splashColor: Colors.grey),
+                                FlatButton(
+                                  color: Colors.white,
+                                  child: Text(
+                                    'Not a Member Yet? Sign Up Here.',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                  onPressed: () async {
+                                    Navigator.pushNamed(context, '/Register');
+                                  },
+                                ),
+                              ],
                             ),
-                            onPressed: () async {
-                              Navigator.pushNamed(context, '/Register');
-                            },
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
-                ],
-              ),
-            ),
-          )),
-    );
+                )),
+          );
   }
 }

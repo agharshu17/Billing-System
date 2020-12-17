@@ -1,6 +1,7 @@
 import 'package:billing_system/broker/editexistingbroker.dart';
 import 'package:billing_system/party/editexistingparty.dart';
 import 'package:billing_system/screens/dialog.dart';
+import 'package:billing_system/services/database.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
@@ -75,9 +76,11 @@ class _ExistingPartyState extends State<ExistingBroker> {
   @override
   void initState() {
     // TODO: implement initState
+    setState(() {
+      values = [];
+      stringvalues = [];
+    });
 
-    values = [];
-    stringvalues = [];
     super.initState();
   }
 
@@ -92,12 +95,8 @@ class _ExistingPartyState extends State<ExistingBroker> {
     Widget continueButton = FlatButton(
       child: Text("Delete"),
       onPressed: () {
-        FirebaseFirestore.instance
-            .collection('Company')
-            .doc(widget.email)
-            .collection('Broker')
-            .doc(name)
-            .delete()
+        Database(email: widget.email)
+            .deleteBroker(name)
             .then((value) => print('success'));
         Navigator.pop(context);
       },

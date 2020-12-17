@@ -2,6 +2,7 @@ import 'package:billing_system/broker/editexistingbroker.dart';
 import 'package:billing_system/party/editexistingparty.dart';
 import 'package:billing_system/product/editexistingproduct.dart';
 import 'package:billing_system/screens/dialog.dart';
+import 'package:billing_system/services/database.dart';
 import 'package:billing_system/transport/editexistingtransport.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -78,8 +79,11 @@ class _ExistingPartyState extends State<ExistingTransport> {
   void initState() {
     // TODO: implement initState
 
-    values = [];
-    stringvalues = [];
+    setState(() {
+      values = [];
+      stringvalues = [];
+    });
+
     super.initState();
   }
 
@@ -94,12 +98,8 @@ class _ExistingPartyState extends State<ExistingTransport> {
     Widget continueButton = FlatButton(
       child: Text("Delete"),
       onPressed: () {
-        FirebaseFirestore.instance
-            .collection('Company')
-            .doc(widget.email)
-            .collection('Transport')
-            .doc(name)
-            .delete()
+        Database(email: widget.email)
+            .deleteTransport(name)
             .then((value) => print('success'));
         Navigator.pop(context);
       },

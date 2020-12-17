@@ -1,5 +1,6 @@
 import 'package:billing_system/party/editexistingparty.dart';
 import 'package:billing_system/screens/dialog.dart';
+import 'package:billing_system/services/database.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
@@ -71,12 +72,14 @@ class ExistingParty extends StatefulWidget {
 class _ExistingPartyState extends State<ExistingParty> {
   var values, name;
   var stringvalues;
+
   @override
   void initState() {
     // TODO: implement initState
-
-    values = [];
-    stringvalues = [];
+    setState(() {
+      values = [];
+      stringvalues = [];
+    });
     super.initState();
   }
 
@@ -91,12 +94,8 @@ class _ExistingPartyState extends State<ExistingParty> {
     Widget continueButton = FlatButton(
       child: Text("Delete"),
       onPressed: () {
-        FirebaseFirestore.instance
-            .collection('Company')
-            .doc(widget.email)
-            .collection('Party Name')
-            .doc(name)
-            .delete()
+        Database(email: widget.email)
+            .deleteParty(name)
             .then((value) => print('success'));
         Navigator.pop(context);
       },
@@ -124,8 +123,8 @@ class _ExistingPartyState extends State<ExistingParty> {
   @override
   Widget build(BuildContext context) {
     return new StreamBuilder(
-      stream: FirebaseFirestore.instance
-          .collection('Company')
+      stream: Database(email: widget.email)
+          .company
           .doc(widget.email)
           .collection('Party Name')
           .snapshots(),

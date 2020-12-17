@@ -31,21 +31,26 @@ class _RegisterState extends State<NewTransport> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    Firebase.initializeApp();
-    FirebaseFirestore.instance
+    firebaseFuncToGetTransport();
+  }
+
+  Future<void> firebaseFuncToGetTransport() async {
+    await FirebaseFirestore.instance
         .collection('Company')
         .doc(widget.email)
         .collection('Transport')
         .get()
         .then((querySnapshot) {
-      if (querySnapshot.docs.length == 0) {
-        _iscreated = false;
-      } else {
-        _iscreated = true;
-        querySnapshot.docs.forEach((result) {
-          info.add(result.data());
-        });
-      }
+      setState(() {
+        if (querySnapshot.docs.length == 0) {
+          _iscreated = false;
+        } else {
+          _iscreated = true;
+          querySnapshot.docs.forEach((result) {
+            info.add(result.data());
+          });
+        }
+      });
     });
   }
 
@@ -135,15 +140,9 @@ class _RegisterState extends State<NewTransport> {
               padding: const EdgeInsets.all(20),
               onPressed: () async {
                 if (_formKey.currentState.validate()) {
-                  FirebaseFirestore.instance
-                      .collection('Company')
-                      .doc(widget.email)
-                      .collection('Transport')
-                      .doc(name)
-                      .set({
-                    "Name": name,
-                    "Vehicle No": FieldValue.arrayUnion([vehicle]),
-                  }, SetOptions(merge: true)).then((value) {
+                  Database(email: widget.email)
+                      .createNewTransport(name, vehicle)
+                      .then((value) {
                     showDialog(
                         context: context,
                         builder: (BuildContext context) {
@@ -153,11 +152,12 @@ class _RegisterState extends State<NewTransport> {
                                   'Your data has been successfully saved!',
                               text: 'OK');
                         });
-
-                    nameInputController = new TextEditingController(text: "");
-                    vehicleInputController =
-                        new TextEditingController(text: "");
-                    name = vehicle = "";
+                    setState(() {
+                      nameInputController = new TextEditingController(text: "");
+                      vehicleInputController =
+                          new TextEditingController(text: "");
+                      name = vehicle = "";
+                    });
                   }).catchError((e) {
                     print(e);
                   });

@@ -31,21 +31,26 @@ class _RegisterState extends State<NewProduct> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    Firebase.initializeApp();
-    FirebaseFirestore.instance
+    firebaseFuncToGetProducts();
+  }
+
+  Future<void> firebaseFuncToGetProducts() async {
+    await FirebaseFirestore.instance
         .collection('Company')
         .doc(widget.email)
         .collection('Product')
         .get()
         .then((querySnapshot) {
-      if (querySnapshot.docs.length == 0) {
-        _iscreated = false;
-      } else {
-        _iscreated = true;
-        querySnapshot.docs.forEach((result) {
-          info.add(result.data());
-        });
-      }
+      setState(() {
+        if (querySnapshot.docs.length == 0) {
+          _iscreated = false;
+        } else {
+          _iscreated = true;
+          querySnapshot.docs.forEach((result) {
+            info.add(result.data());
+          });
+        }
+      });
     });
   }
 
@@ -135,15 +140,9 @@ class _RegisterState extends State<NewProduct> {
               padding: const EdgeInsets.all(20),
               onPressed: () async {
                 if (_formKey.currentState.validate()) {
-                  FirebaseFirestore.instance
-                      .collection('Company')
-                      .doc(widget.email)
-                      .collection('Product')
-                      .doc(name)
-                      .set({
-                    "Name": name,
-                    "Brand": FieldValue.arrayUnion([brand]),
-                  }, SetOptions(merge: true)).then((value) {
+                  Database(email: widget.email)
+                      .createNewProduct(name, brand)
+                      .then((value) {
                     showDialog(
                         context: context,
                         builder: (BuildContext context) {
@@ -153,10 +152,12 @@ class _RegisterState extends State<NewProduct> {
                                   'Your data has been successfully saved!',
                               text: 'OK');
                         });
-
-                    nameInputController = new TextEditingController(text: "");
-                    brandInputController = new TextEditingController(text: "");
-                    name = brand = "";
+                    setState(() {
+                      nameInputController = new TextEditingController(text: "");
+                      brandInputController =
+                          new TextEditingController(text: "");
+                      name = brand = "";
+                    });
                   }).catchError((e) {
                     print(e);
                   });
