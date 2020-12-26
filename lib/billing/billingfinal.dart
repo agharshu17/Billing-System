@@ -1,12 +1,14 @@
+import 'package:billing_system/billing/billingTransport.dart';
 import 'package:billing_system/billing/expenses.dart';
 import 'package:billing_system/shared/loading.dart';
 import 'package:flutter/material.dart';
 
 class billingAns extends StatefulWidget {
-  final String partyName, brokerName, product, brand, pan;
+  final String partyName, brokerName, product, brand, pan, email;
   final double rate, taxRate, taxRateHalf, panRate, weight;
   const billingAns(
       {Key key,
+      this.email,
       this.partyName,
       this.brokerName,
       this.product,
@@ -214,7 +216,8 @@ class _billingAnsState extends State<billingAns> {
                               Navigator.of(context).push(
                                   MaterialPageRoute<Null>(
                                       builder: (BuildContext context) {
-                                return new Expenses(
+                                return new BillingTransport(
+                                    email: widget.email,
                                     partyName: widget.partyName,
                                     brokerName: widget.brokerName,
                                     product: widget.product,
@@ -223,6 +226,7 @@ class _billingAnsState extends State<billingAns> {
                                     weight: widget.weight,
                                     taxRate: widget.taxRate,
                                     taxRateHalf: widget.taxRateHalf,
+                                    pan: widget.pan,
                                     panRate: widget.panRate);
                               }));
                             })

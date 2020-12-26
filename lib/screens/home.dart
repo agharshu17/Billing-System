@@ -1,6 +1,7 @@
 import 'package:billing_system/billing/party_broker.dart';
 import 'package:billing_system/home/billing.dart';
 import 'package:billing_system/home/broker.dart';
+import 'package:billing_system/home/documents.dart';
 import 'package:billing_system/home/party.dart';
 import 'package:billing_system/home/product.dart';
 import 'package:billing_system/home/profile.dart';
@@ -122,7 +123,12 @@ class _HomeState extends State<Home> {
                     );
                   }));
                 } else if (index == 5) {
-                  Navigator.of(context).pushNamed('/Documents');
+                  Navigator.of(context).push(
+                      MaterialPageRoute<Null>(builder: (BuildContext context) {
+                    return new Documents(
+                      email: email,
+                    );
+                  }));
                 }
               },
             ),

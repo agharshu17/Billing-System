@@ -2,10 +2,11 @@ import 'package:billing_system/billing/billingfinal.dart';
 import 'package:flutter/material.dart';
 
 class tcs extends StatefulWidget {
-  final String partyName, brokerName, product, brand;
+  final String partyName, brokerName, product, brand, email;
   final double rate, taxRate, taxRateHalf, weight;
   const tcs(
       {Key key,
+      this.email,
       this.partyName,
       this.brokerName,
       this.product,
@@ -157,6 +158,7 @@ class _tcsState extends State<tcs> {
                                         MaterialPageRoute<Null>(
                                             builder: (BuildContext context) {
                                       return new billingAns(
+                                          email: widget.email,
                                           partyName: widget.partyName,
                                           brokerName: widget.brokerName,
                                           product: widget.product,
@@ -215,6 +217,7 @@ class _tcsState extends State<tcs> {
                                         MaterialPageRoute<Null>(
                                             builder: (BuildContext context) {
                                       return new billingAns(
+                                          email: widget.email,
                                           partyName: widget.partyName,
                                           brokerName: widget.brokerName,
                                           product: widget.product,
@@ -272,6 +275,7 @@ class _tcsState extends State<tcs> {
                                         MaterialPageRoute<Null>(
                                             builder: (BuildContext context) {
                                       return new billingAns(
+                                          email: widget.email,
                                           partyName: widget.partyName,
                                           brokerName: widget.brokerName,
                                           product: widget.product,

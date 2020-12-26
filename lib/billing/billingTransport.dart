@@ -1,12 +1,11 @@
-import 'dart:ffi';
-
-import 'package:billing_system/billing/tcs.dart';
+import 'package:billing_system/billing/expenses.dart';
+import 'package:billing_system/billing/selectTransport.dart';
 import 'package:flutter/material.dart';
 
-class Taxation extends StatefulWidget {
-  final String partyName, brokerName, product, brand, email;
-  final double rate, weight;
-  const Taxation(
+class BillingTransport extends StatefulWidget {
+  final String partyName, brokerName, product, brand, pan, email;
+  final double rate, taxRate, taxRateHalf, panRate, weight;
+  const BillingTransport(
       {Key key,
       this.email,
       this.partyName,
@@ -14,27 +13,66 @@ class Taxation extends StatefulWidget {
       this.product,
       this.brand,
       this.rate,
-      this.weight})
+      this.weight,
+      this.taxRate,
+      this.taxRateHalf,
+      this.pan,
+      this.panRate})
       : super(key: key);
   @override
-  _PackagingState createState() => _PackagingState();
+  _ExpensesState createState() => _ExpensesState();
 }
 
-class _PackagingState extends State<Taxation> {
-  bool taxable = false,
-      nontaxable = false,
-      intrastate = false,
-      interstate = false;
-  String taxableChange = "Taxable";
-  String nontaxableChange = "Non-Taxable";
-  String tax = "TAX";
+class _ExpensesState extends State<BillingTransport> {
+  bool transportyes = false,
+      transportno = false,
+      advanceyes = false,
+      advanceno = false;
+  String transportChange = "YES";
+  String nontransportChange = "NO";
+  String transport = "TRANSPORTATION COST";
   bool _isEnabled = false;
-  String inputRate = "";
-  double inputRateDouble = 0, inputRateDoubleHalf = 0;
-  TextEditingController inputRateInputController;
-  TextEditingController igstInputController,
-      cgstInputController,
-      sgstInputController;
+  String inputRatePerQuintal = "", advance = "", totalFright = "";
+  double inputRatePerQuintalDouble = 0,
+      advanceDouble = 0,
+      totalFrightDouble = 0;
+  TextEditingController advanceInputController,
+      inputRatePerQuintalInputController,
+      noadvanceInputController,
+      notransportInputController,
+      weightInputController,
+      totalFrightInputController;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    setState(() {
+      weightInputController =
+          TextEditingController(text: widget.weight.toString());
+    });
+  }
+
+  void func() {
+    setState(() {
+      if (inputRatePerQuintal != "" && advance != "") {
+        totalFrightDouble =
+            (inputRatePerQuintalDouble * widget.weight) - advanceDouble;
+        totalFrightInputController =
+            TextEditingController(text: totalFrightDouble.toString());
+      }
+    });
+  }
+
+  void func2() {
+    setState(() {
+      if (inputRatePerQuintal != "" && advance == "0") {
+        totalFrightDouble = (inputRatePerQuintalDouble * widget.weight);
+        totalFrightInputController =
+            TextEditingController(text: totalFrightDouble.toString());
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -59,7 +97,7 @@ class _PackagingState extends State<Taxation> {
                     height: 25,
                   ),
                   Text(
-                    tax,
+                    transport,
                     style: TextStyle(
                       fontSize: 20,
                       color: Colors.black38,
@@ -74,21 +112,27 @@ class _PackagingState extends State<Taxation> {
                       width: 20,
                     ),
                     new RaisedButton(
-                      child: new Text(taxableChange),
+                      child: new Text('YES'),
                       color: Colors.blueAccent[600],
                       onPressed: () {
-                        if (taxable == false) {
+                        if (transportyes == false) {
                           setState(() {
-                            taxable = true;
-                            nontaxable = false;
-                            tax = "Select State";
-                            taxableChange = "Intra State";
-                            nontaxableChange = "Inter State";
+                            transportyes = true;
+                            transportno = false;
+                            transport = "Advance Payment?";
+                            _isEnabled = false;
                           });
                         } else {
                           setState(() {
-                            interstate = false;
-                            intrastate = true;
+                            advanceno = false;
+                            advanceyes = true;
+                            _isEnabled = true;
+                            advance = "";
+                            advanceInputController =
+                                TextEditingController(text: "");
+                            totalFrightInputController =
+                                TextEditingController(text: "");
+                            totalFrightDouble = 0;
                           });
                         }
                       },
@@ -97,20 +141,26 @@ class _PackagingState extends State<Taxation> {
                       width: 80,
                     ),
                     new RaisedButton(
-                      child: new Text(nontaxableChange),
+                      child: new Text('NO'),
                       color: Colors.blueAccent[600],
                       onPressed: () {
-                        if (taxable == false) {
+                        if (transportyes == false) {
                           setState(() {
-                            nontaxable = true;
-                            taxable = false;
-                            _isEnabled = true;
+                            transportno = true;
+                            transportyes = false;
+                            _isEnabled = false;
                           });
                         } else {
                           setState(() {
-                            interstate = true;
-                            intrastate = false;
-                            _isEnabled = true;
+                            advanceno = true;
+                            advanceyes = false;
+                            _isEnabled = false;
+                            advance = "0";
+                            advanceInputController =
+                                TextEditingController(text: "0");
+                            totalFrightInputController =
+                                TextEditingController(text: "");
+                            totalFrightDouble = 0;
                           });
                         }
                       },
@@ -119,23 +169,14 @@ class _PackagingState extends State<Taxation> {
                   SizedBox(
                     height: 50,
                   ),
-                  !interstate
+                  (!advanceyes)
                       ? Text('')
                       : new Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: <Widget>[
                               TextFormField(
-                                onChanged: (value) {
-                                  inputRate = value;
-                                  setState(() {
-                                    inputRateDouble = double.parse(inputRate);
-                                    inputRateDoubleHalf = 0;
-                                    igstInputController = TextEditingController(
-                                        text: inputRateDouble.toString());
-                                  });
-                                },
                                 decoration: InputDecoration(
-                                    labelText: "Input Tax Percentage(%)",
+                                    labelText: "Total Weight",
                                     hintText: '0',
                                     floatingLabelBehavior:
                                         FloatingLabelBehavior.always,
@@ -144,7 +185,146 @@ class _PackagingState extends State<Taxation> {
                                       Icons.perm_identity,
                                       color: Colors.blue[400],
                                     )),
-                                controller: inputRateInputController,
+                                controller: weightInputController,
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 17.0,
+                                ),
+                              ),
+                              TextFormField(
+                                onChanged: (value) {
+                                  inputRatePerQuintal = value;
+                                  inputRatePerQuintalDouble =
+                                      double.parse(inputRatePerQuintal);
+                                  func();
+                                },
+                                decoration: InputDecoration(
+                                    labelText: "Fright Rate Per Quintal(Rs)",
+                                    hintText: '0',
+                                    labelStyle: TextStyle(color: Colors.black),
+                                    prefixIcon: Icon(
+                                      Icons.perm_identity,
+                                      color: Colors.blue[400],
+                                    )),
+                                controller: inputRatePerQuintalInputController,
+                                enabled: true,
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 17.0,
+                                ),
+                              ),
+                              TextFormField(
+                                onChanged: (value) {
+                                  advance = value;
+                                  advanceDouble = double.parse(advance);
+                                  func();
+                                },
+                                decoration: InputDecoration(
+                                    labelText: "Advance Payment",
+                                    hintText: '0',
+                                    floatingLabelBehavior:
+                                        FloatingLabelBehavior.always,
+                                    labelStyle: TextStyle(color: Colors.black),
+                                    prefixIcon: Icon(
+                                      Icons.perm_identity,
+                                      color: Colors.blue[400],
+                                    )),
+                                controller: advanceInputController,
+                                enabled: _isEnabled,
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 17.0,
+                                ),
+                              ),
+                              TextFormField(
+                                decoration: InputDecoration(
+                                    labelText: "Total Fright(Rs)",
+                                    hintText: '0',
+                                    floatingLabelBehavior:
+                                        FloatingLabelBehavior.always,
+                                    labelStyle: TextStyle(color: Colors.black),
+                                    prefixIcon: Icon(
+                                      Icons.perm_identity,
+                                      color: Colors.blue[400],
+                                    )),
+                                controller: totalFrightInputController,
+                                enabled: false,
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 17.0,
+                                ),
+                              ),
+                              SizedBox(
+                                height: 50,
+                              ),
+                              RaisedButton(
+                                  child: Text(
+                                    'Next',
+                                    style: TextStyle(color: Colors.black54),
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: new BorderRadius.circular(5),
+                                    side: BorderSide(color: Colors.black),
+                                  ),
+                                  padding: const EdgeInsets.all(20),
+                                  onPressed: () async {
+                                    Navigator.of(context).push(
+                                        MaterialPageRoute<Null>(
+                                            builder: (BuildContext context) {
+                                      return new selectTransport(
+                                          email: widget.email,
+                                          partyName: widget.partyName,
+                                          brokerName: widget.brokerName,
+                                          product: widget.product,
+                                          brand: widget.brand,
+                                          rate: widget.rate,
+                                          weight: widget.weight,
+                                          taxRate: widget.taxRate,
+                                          taxRateHalf: widget.taxRateHalf,
+                                          pan: widget.pan,
+                                          panRate: widget.panRate,
+                                          frightRate: totalFrightDouble);
+                                    }));
+                                  }),
+                            ]),
+                  (!advanceno)
+                      ? Text('')
+                      : new Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: <Widget>[
+                              TextFormField(
+                                decoration: InputDecoration(
+                                    labelText: "Total Weight",
+                                    hintText: '0',
+                                    floatingLabelBehavior:
+                                        FloatingLabelBehavior.always,
+                                    labelStyle: TextStyle(color: Colors.black),
+                                    prefixIcon: Icon(
+                                      Icons.perm_identity,
+                                      color: Colors.blue[400],
+                                    )),
+                                controller: weightInputController,
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 17.0,
+                                ),
+                              ),
+                              TextFormField(
+                                onChanged: (value) {
+                                  inputRatePerQuintal = value;
+                                  inputRatePerQuintalDouble =
+                                      double.parse(inputRatePerQuintal);
+                                  func2();
+                                },
+                                decoration: InputDecoration(
+                                    labelText: "Fright Rate Per Quintal(Rs)",
+                                    hintText: '0',
+                                    labelStyle: TextStyle(color: Colors.black),
+                                    prefixIcon: Icon(
+                                      Icons.perm_identity,
+                                      color: Colors.blue[400],
+                                    )),
+                                controller: inputRatePerQuintalInputController,
                                 enabled: true,
                                 style: TextStyle(
                                   color: Colors.black,
@@ -153,7 +333,7 @@ class _PackagingState extends State<Taxation> {
                               ),
                               TextFormField(
                                 decoration: InputDecoration(
-                                    labelText: "IGST(%)",
+                                    labelText: "Advance Payment",
                                     hintText: '0',
                                     floatingLabelBehavior:
                                         FloatingLabelBehavior.always,
@@ -162,7 +342,25 @@ class _PackagingState extends State<Taxation> {
                                       Icons.perm_identity,
                                       color: Colors.blue[400],
                                     )),
-                                controller: igstInputController,
+                                controller: advanceInputController,
+                                enabled: false,
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 17.0,
+                                ),
+                              ),
+                              TextFormField(
+                                decoration: InputDecoration(
+                                    labelText: "Total Fright(Rs)",
+                                    hintText: '0',
+                                    floatingLabelBehavior:
+                                        FloatingLabelBehavior.always,
+                                    labelStyle: TextStyle(color: Colors.black),
+                                    prefixIcon: Icon(
+                                      Icons.perm_identity,
+                                      color: Colors.blue[400],
+                                    )),
+                                controller: totalFrightInputController,
                                 enabled: false,
                                 style: TextStyle(
                                   color: Colors.black,
@@ -186,7 +384,7 @@ class _PackagingState extends State<Taxation> {
                                     Navigator.of(context).push(
                                         MaterialPageRoute<Null>(
                                             builder: (BuildContext context) {
-                                      return new tcs(
+                                      return new selectTransport(
                                           email: widget.email,
                                           partyName: widget.partyName,
                                           brokerName: widget.brokerName,
@@ -194,168 +392,44 @@ class _PackagingState extends State<Taxation> {
                                           brand: widget.brand,
                                           rate: widget.rate,
                                           weight: widget.weight,
-                                          taxRate: inputRateDouble,
-                                          taxRateHalf: inputRateDoubleHalf);
+                                          taxRate: widget.taxRate,
+                                          taxRateHalf: widget.taxRateHalf,
+                                          pan: widget.pan,
+                                          panRate: widget.panRate,
+                                          frightRate: totalFrightDouble);
                                     }));
                                   }),
                             ]),
-                  !intrastate
-                      ? Text('')
-                      : new Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: <Widget>[
-                              TextFormField(
-                                onChanged: (value) {
-                                  inputRate = value;
-                                  setState(() {
-                                    inputRateDouble = double.parse(inputRate);
-                                    inputRateDoubleHalf = inputRateDouble / 2;
-                                    cgstInputController = TextEditingController(
-                                        text: inputRateDoubleHalf.toString());
-                                    sgstInputController = TextEditingController(
-                                        text: inputRateDoubleHalf.toString());
-                                  });
-                                },
-                                decoration: InputDecoration(
-                                    labelText: "Input Tax Percentage(%)",
-                                    hintText: '0',
-                                    floatingLabelBehavior:
-                                        FloatingLabelBehavior.always,
-                                    labelStyle: TextStyle(color: Colors.black),
-                                    prefixIcon: Icon(
-                                      Icons.perm_identity,
-                                      color: Colors.blue[400],
-                                    )),
-                                controller: inputRateInputController,
-                                enabled: true,
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 17.0,
-                                ),
-                              ),
-                              TextFormField(
-                                decoration: InputDecoration(
-                                    labelText: "CGST(%)",
-                                    hintText: '0',
-                                    floatingLabelBehavior:
-                                        FloatingLabelBehavior.always,
-                                    labelStyle: TextStyle(color: Colors.black),
-                                    prefixIcon: Icon(
-                                      Icons.perm_identity,
-                                      color: Colors.blue[400],
-                                    )),
-                                controller: cgstInputController,
-                                enabled: false,
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 17.0,
-                                ),
-                              ),
-                              TextFormField(
-                                decoration: InputDecoration(
-                                    labelText: "SGST(%)",
-                                    hintText: '0',
-                                    floatingLabelBehavior:
-                                        FloatingLabelBehavior.always,
-                                    labelStyle: TextStyle(color: Colors.black),
-                                    prefixIcon: Icon(
-                                      Icons.perm_identity,
-                                      color: Colors.blue[400],
-                                    )),
-                                controller: sgstInputController,
-                                enabled: false,
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 17.0,
-                                ),
-                              ),
-                              SizedBox(
-                                height: 50,
-                              ),
-                              RaisedButton(
-                                  child: Text(
-                                    'Next',
-                                    style: TextStyle(color: Colors.black54),
-                                  ),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: new BorderRadius.circular(5),
-                                    side: BorderSide(color: Colors.black),
-                                  ),
-                                  padding: const EdgeInsets.all(20),
-                                  onPressed: () async {
-                                    Navigator.of(context).push(
-                                        MaterialPageRoute<Null>(
-                                            builder: (BuildContext context) {
-                                      return new tcs(
-                                          email: widget.email,
-                                          partyName: widget.partyName,
-                                          brokerName: widget.brokerName,
-                                          product: widget.product,
-                                          brand: widget.brand,
-                                          rate: widget.rate,
-                                          weight: widget.weight,
-                                          taxRate: inputRateDouble,
-                                          taxRateHalf: inputRateDoubleHalf);
-                                    }));
-                                  }),
-                            ]),
-                  !nontaxable
-                      ? Text('')
-                      : new Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: <Widget>[
-                              TextFormField(
-                                decoration: InputDecoration(
-                                    labelText: "Input Tax Percentage(%)",
-                                    hintText: '0',
-                                    floatingLabelBehavior:
-                                        FloatingLabelBehavior.always,
-                                    labelStyle: TextStyle(color: Colors.black),
-                                    prefixIcon: Icon(
-                                      Icons.perm_identity,
-                                      color: Colors.blue[400],
-                                    )),
-                                controller: inputRateInputController,
-                                enabled: false,
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 17.0,
-                                ),
-                              ),
-                              SizedBox(
-                                height: 50,
-                              ),
-                              RaisedButton(
-                                  child: Text(
-                                    'Next',
-                                    style: TextStyle(color: Colors.black54),
-                                  ),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: new BorderRadius.circular(5),
-                                    side: BorderSide(color: Colors.black),
-                                  ),
-                                  padding: const EdgeInsets.all(20),
-                                  onPressed: () async {
-                                    setState(() {
-                                      inputRateDouble = 0;
-                                      inputRateDoubleHalf = 0;
-                                    });
-                                    Navigator.of(context).push(
-                                        MaterialPageRoute<Null>(
-                                            builder: (BuildContext context) {
-                                      return new tcs(
-                                          email: widget.email,
-                                          partyName: widget.partyName,
-                                          brokerName: widget.brokerName,
-                                          product: widget.product,
-                                          brand: widget.brand,
-                                          rate: widget.rate,
-                                          weight: widget.weight,
-                                          taxRate: inputRateDouble,
-                                          taxRateHalf: inputRateDoubleHalf);
-                                    }));
-                                  })
-                            ]),
+                  !transportno
+                      ? Text("")
+                      : RaisedButton(
+                          child: Text(
+                            'Next',
+                            style: TextStyle(color: Colors.black54),
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: new BorderRadius.circular(5),
+                            side: BorderSide(color: Colors.black),
+                          ),
+                          padding: const EdgeInsets.all(20),
+                          onPressed: () async {
+                            Navigator.of(context).push(MaterialPageRoute<Null>(
+                                builder: (BuildContext context) {
+                              return new Expenses(
+                                  email: widget.email,
+                                  partyName: widget.partyName,
+                                  brokerName: widget.brokerName,
+                                  product: widget.product,
+                                  brand: widget.brand,
+                                  rate: widget.rate,
+                                  weight: widget.weight,
+                                  taxRate: widget.taxRate,
+                                  taxRateHalf: widget.taxRateHalf,
+                                  pan: widget.pan,
+                                  panRate: widget.panRate,
+                                  frightRate: totalFrightDouble);
+                            }));
+                          }),
                 ],
               ),
             )));

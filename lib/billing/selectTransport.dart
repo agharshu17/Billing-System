@@ -1,3 +1,4 @@
+import 'package:billing_system/billing/expenses.dart';
 import 'package:billing_system/billing/packaging.dart';
 import 'package:billing_system/billing/product_billing.dart';
 import 'package:billing_system/shared/loading.dart';
@@ -5,17 +6,30 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dropdownfield/dropdownfield.dart';
 import 'package:flutter/material.dart';
 
-class ProductBilling extends StatefulWidget {
-  final String email, partyName, brokerName;
-
-  const ProductBilling({Key key, this.email, this.partyName, this.brokerName})
+class selectTransport extends StatefulWidget {
+  final String partyName, brokerName, product, brand, pan, email;
+  final double rate, taxRate, taxRateHalf, panRate, weight, frightRate;
+  const selectTransport(
+      {Key key,
+      this.email,
+      this.partyName,
+      this.brokerName,
+      this.product,
+      this.brand,
+      this.rate,
+      this.weight,
+      this.taxRate,
+      this.taxRateHalf,
+      this.pan,
+      this.panRate,
+      this.frightRate})
       : super(key: key);
 
   @override
   _PartyBrokerState createState() => _PartyBrokerState();
 }
 
-class _PartyBrokerState extends State<ProductBilling> {
+class _PartyBrokerState extends State<selectTransport> {
   String product = '', brand = '';
   List<String> productList = [];
   List<String> brandList = [];
@@ -44,7 +58,7 @@ class _PartyBrokerState extends State<ProductBilling> {
     firestore = FirebaseFirestore.instance
         .collection('Company')
         .doc(widget.email)
-        .collection('Product');
+        .collection('Transport');
     await firestore.get().then((querySnapshot) {
       querySnapshot.docs.forEach((result) {
         //  totalList.add(result.data());
@@ -83,7 +97,7 @@ class _PartyBrokerState extends State<ProductBilling> {
                       height: 25,
                     ),
                     Text(
-                      'PRODUCT',
+                      'TRANSPORT',
                       style: TextStyle(
                         fontSize: 20,
                         color: Colors.black38,
@@ -107,7 +121,7 @@ class _PartyBrokerState extends State<ProductBilling> {
                         setState(() {
                           brand = "";
                           brandList = [];
-                          for (var x in info['Brand']) {
+                          for (var x in info['Vehicle No']) {
                             brandList.add(x);
                           }
                           print(brandList);
@@ -116,8 +130,8 @@ class _PartyBrokerState extends State<ProductBilling> {
                       },
                       value: product,
                       required: false,
-                      hintText: 'Select Product',
-                      labelText: 'Product',
+                      hintText: 'Select Transport',
+                      labelText: 'Transport',
                       items: productList,
                     ),
                     SizedBox(
@@ -133,8 +147,8 @@ class _PartyBrokerState extends State<ProductBilling> {
                       },
                       value: brand,
                       required: false,
-                      hintText: 'Select Brand',
-                      labelText: 'Brand',
+                      hintText: 'Select Vehicle',
+                      labelText: 'Vehicle',
                       items: brandList,
                     ),
                     SizedBox(
@@ -153,12 +167,19 @@ class _PartyBrokerState extends State<ProductBilling> {
                         onPressed: () async {
                           Navigator.of(context).push(MaterialPageRoute<Null>(
                               builder: (BuildContext context) {
-                            return new Packaging(
+                            return new Expenses(
                                 email: widget.email,
                                 partyName: widget.partyName,
                                 brokerName: widget.brokerName,
-                                product: product,
-                                brand: brand);
+                                product: widget.product,
+                                brand: widget.brand,
+                                rate: widget.rate,
+                                weight: widget.weight,
+                                taxRate: widget.taxRate,
+                                taxRateHalf: widget.taxRateHalf,
+                                pan: widget.pan,
+                                panRate: widget.panRate,
+                                frightRate: widget.frightRate);
                           }));
                         })
                   ],

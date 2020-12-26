@@ -2,9 +2,14 @@ import 'package:billing_system/billing/tax.dart';
 import 'package:flutter/material.dart';
 
 class Packaging extends StatefulWidget {
-  final String partyName, brokerName, product, brand;
+  final String partyName, brokerName, product, brand, email;
   const Packaging(
-      {Key key, this.partyName, this.brokerName, this.product, this.brand})
+      {Key key,
+      this.email,
+      this.partyName,
+      this.brokerName,
+      this.product,
+      this.brand})
       : super(key: key);
   @override
   _PackagingState createState() => _PackagingState();
@@ -189,6 +194,7 @@ class _PackagingState extends State<Packaging> {
                         Navigator.of(context).push(MaterialPageRoute<Null>(
                             builder: (BuildContext context) {
                           return new Taxation(
+                              email: widget.email,
                               partyName: widget.partyName,
                               brokerName: widget.brokerName,
                               product: widget.product,
