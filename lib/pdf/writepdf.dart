@@ -1,57 +1,83 @@
 import 'package:billing_system/pdf/createpdf.dart';
-import 'package:billing_system/pdf/reviewpdf.dart';
-import 'package:android_intent/android_intent.dart';
-import 'package:android_intent/flag.dart';
+import 'package:billing_system/services/databasepdf.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter_share_me/flutter_share_me.dart';
-import 'package:intent/extra.dart';
-import 'package:share/share.dart';
-// import 'package:intent/extra.dart';
-import 'package:printing/printing.dart';
-//import 'package:file_picker/file_picker.dart';
-import 'package:url_launcher/url_launcher.dart';
-import 'package:intent/intent.dart' as android_intent;
-import 'package:intent/action.dart' as android_action;
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:number_to_words/number_to_words.dart';
 import 'package:pdf/pdf.dart';
 import 'dart:io';
 import 'package:pdf/widgets.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter/material.dart' as material;
-import 'dart:convert';
+import 'package:intl/intl.dart';
+import 'package:json_table/json_table.dart';
 
 reportView(
     context,
     email,
     partyName,
     brokerName,
-    product,
-    brand,
-    rate,
-    weight,
+    invoice,
+    productList,
     taxRate,
     taxRateHalf,
+    interstate,
     pan,
     panRate,
     frightRate,
+    rate,
+    transport,
     otherExpenseName,
     otherExpenseRate) async {
+  var value = DatabasePdf(email: email);
+  await value.companyInfo();
+  await value.partyInfo(partyName);
+  await value.brokerInfo(brokerName);
+  await value.bankDescription();
+  value.transportInfo(transport);
+  String cgst = "", igst = "";
+  double cgstAmount = 0, igstAmount = 0;
+
+  int k = 0;
   final Document pdf = Document();
+  DateTime now = new DateTime.now();
+  String date = DateFormat('yMd').format(now);
+
+  double packaging = 0, quantity = 0, amount = 0;
+
+  for (var x in productList) {
+    packaging += x['Packaging'];
+    quantity += x['Weight'];
+    amount += x['Rate'];
+  }
+
+  if (taxRateHalf == 0) {
+    igst = taxRate.toString();
+    igstAmount = amount * taxRate / 100;
+  } else if (taxRate == 0) {
+    cgst = taxRateHalf.toString();
+    cgstAmount = amount * taxRateHalf / 100;
+  }
+
+  int toPay =
+      (rate['Net'] + frightRate['TotalFright'] + otherExpenseRate).round();
+  String toPayWords = NumberToWord().convert('en-in', toPay);
+
+  print(productList);
 
   pdf.addPage(MultiPage(
-      pageFormat:
-          PdfPageFormat.letter.copyWith(marginBottom: 1.5 * PdfPageFormat.cm),
+      pageFormat: PdfPageFormat.a4,
+      //.copyWith(marginBottom: 1.5 * PdfPageFormat.cm),
       crossAxisAlignment: CrossAxisAlignment.start,
       header: (Context context) {
-        if (context.pageNumber == 1) {
-          return null;
-        }
+        // if (context.pageNumber == 1) {
+        //   return null;
+        // }
         return Container(
             alignment: Alignment.centerRight,
             margin: const EdgeInsets.only(bottom: 3.0 * PdfPageFormat.mm),
             padding: const EdgeInsets.only(bottom: 3.0 * PdfPageFormat.mm),
             decoration: const BoxDecoration(),
-            child: Text('Report',
+            child: Text('Bill of Supply',
                 style: Theme.of(context)
                     .defaultTextStyle
                     .copyWith(color: PdfColors.grey)));
@@ -60,48 +86,456 @@ reportView(
         return Container(
             alignment: Alignment.centerRight,
             margin: const EdgeInsets.only(top: 1.0 * PdfPageFormat.cm),
-            child: Text('Page ${context.pageNumber} of ${context.pagesCount}',
+            child: Text('This is a Computer generated Invoice.',
                 style: Theme.of(context)
                     .defaultTextStyle
                     .copyWith(color: PdfColors.grey)));
       },
       build: (Context context) => <Widget>[
             Header(
-                level: 0,
-                child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              level: 0,
+              child: Column(
+                children: <Widget>[
+                  Container(
+                    decoration: BoxDecoration(
+                      border: Border(
+                        bottom: BorderSide.none,
+                        top: BorderSide.none,
+                      ),
+                    ),
+                    child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('GSTIN: ${value.companyGst}',
+                                  style: TextStyle(fontSize: 10)),
+                              Text('FSSAI: ${value.companyFssai}',
+                                  style: TextStyle(fontSize: 10)),
+                              Text('State: Maharashtra',
+                                  style: TextStyle(fontSize: 10)),
+                              Text('State Code: 27',
+                                  style: TextStyle(fontSize: 10)),
+                            ],
+                          ),
+                          Text('TAX INVOICE/ BILL OF SUPPLY',
+                              style: TextStyle(
+                                  fontSize: 10, fontWeight: FontWeight.bold)),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Text('STD: 0724', style: TextStyle(fontSize: 10)),
+                              Text('Off: ${value.companyOfficeContact}',
+                                  style: TextStyle(fontSize: 10)),
+                              Text('Fact: ${value.companyFactoryContact}',
+                                  style: TextStyle(fontSize: 10)),
+                              Text('Mob: ${value.companyMobileContact}',
+                                  style: TextStyle(fontSize: 10)),
+                            ],
+                          ), // Need this to be
+
+                          // PdfLogo()
+                        ]),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Container(
+                    decoration: BoxDecoration(
+                      border: Border(
+                        bottom: BorderSide.none,
+                        top: BorderSide.none,
+                      ),
+                    ),
+                    child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('${value.companyName}',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 13)),
+                              Text('Off: ${value.companyOfficeAddress}',
+                                  style: TextStyle(fontSize: 8)),
+                              Text('Fact: ${value.companyFactoryAddress}',
+                                  style: TextStyle(fontSize: 8)),
+                            ],
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Text('    '),
+                              Text(
+                                'Invoice No.: $invoice',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold, fontSize: 10),
+                              ),
+                              Text('Date: $date',
+                                  style: TextStyle(fontSize: 10)),
+                            ],
+                          ), // Need this to be
+
+                          // PdfLogo()
+                        ]),
+                  ),
+                ],
+              ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Container(
+                  // width: 300,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: <Widget>[
-                      Text('Report', textScaleFactor: 2),
-                      PdfLogo()
-                    ])),
-            Header(level: 1, text: 'What is Lorem Ipsum?'),
-            Paragraph(
-                text:
-                    'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.'),
-            Paragraph(
-                text:
-                    'It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using "Content here, content here", making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for "lorem ipsum" will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like).'),
-            Header(level: 1, text: 'Where does it come from?'),
-            Paragraph(
-                text:
-                    'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.'),
-            Paragraph(
-                text:
-                    'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.'),
-            Padding(padding: const EdgeInsets.all(10)),
-            Table.fromTextArray(context: context, data: const <List<String>>[
-              <String>['Year', 'Ipsum', 'Lorem'],
-              <String>['2000', 'Ipsum 1.0', 'Lorem 1'],
-              <String>['2001', 'Ipsum 1.1', 'Lorem 2'],
-              <String>['2002', 'Ipsum 1.2', 'Lorem 3'],
-              <String>['2003', 'Ipsum 1.3', 'Lorem 4'],
-              <String>['2004', 'Ipsum 1.4', 'Lorem 5'],
-              <String>['2004', 'Ipsum 1.5', 'Lorem 6'],
-              <String>['2006', 'Ipsum 1.6', 'Lorem 7'],
-              <String>['2007', 'Ipsum 1.7', 'Lorem 8'],
-              <String>['2008', 'Ipsum 1.7', 'Lorem 9'],
-            ]),
+                      Text('Buyer',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 10)),
+                      Text('Name: $partyName', style: TextStyle(fontSize: 10)),
+                      Text('Email: ${value.partyEmail}',
+                          style: TextStyle(fontSize: 10)),
+                      Text('Address: ${value.partyAddress}',
+                          style: TextStyle(fontSize: 10)),
+                      Text('Off: ${value.partyOfficeContact}',
+                          style: TextStyle(fontSize: 10)),
+                      Text('Mobile: ${value.partyMobileContact}',
+                          style: TextStyle(fontSize: 10)),
+                      Text('State: ', style: TextStyle(fontSize: 10)),
+                      Text('State Code: ', style: TextStyle(fontSize: 10)),
+                      Text('GSTIN: ${value.partyGst}',
+                          style: TextStyle(fontSize: 10)),
+                      Text('FSSAI: ${value.partyFssai}',
+                          style: TextStyle(fontSize: 10)),
+                    ],
+                  ),
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    Text('Canvassing Agent',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 10)),
+                    Text('Name: $brokerName', style: TextStyle(fontSize: 10)),
+                    Text('Mobile: ${value.agentMobileContact}',
+                        style: TextStyle(fontSize: 10)),
+                    SizedBox(height: 12),
+                    Text('Transportation Details',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 10)),
+                    Text('Name: ${value.transportName}',
+                        style: TextStyle(fontSize: 10)),
+                    Text('Vehicle No.: ${value.transportVehicle}',
+                        style: TextStyle(fontSize: 10)),
+                    Text(
+                        'Fright Rate: ${frightRate['frightRatePerQuintal'].toString()}',
+                        style: TextStyle(fontSize: 10)),
+                    Text('(per quintal)', style: TextStyle(fontSize: 8)),
+                    Text('Advance: ${frightRate['Advance'].toString()}',
+                        style: TextStyle(fontSize: 10)),
+                  ],
+                )
+              ],
+            ),
+            SizedBox(height: 20),
+            Table(
+              children: [
+                TableRow(
+                  decoration: new BoxDecoration(
+                      border:
+                          Border.symmetric(horizontal: BorderSide(width: .25))),
+                  children: [
+                    Text('No.', textScaleFactor: .75),
+                    Text('Description of Goods', textScaleFactor: .75),
+                    Text('HSN', textScaleFactor: .75),
+                    Text('Packaging (kg)', textScaleFactor: .75),
+                    Text('No. of Bags', textScaleFactor: .75),
+                    Text('Quantity (quintals)', textScaleFactor: .75),
+                    Text('Rate per quintal', textScaleFactor: .75),
+                    Text('Amount (Rs)', textScaleFactor: .75),
+                    SizedBox(height: 20),
+                  ],
+                ),
+                for (var i in productList)
+                  TableRow(children: [
+                    Text('${++k}', textScaleFactor: .75),
+                    for (var j in i.values) Text('$j', textScaleFactor: .75),
+                    SizedBox(height: 20),
+                  ]),
+                for (int l = k; l < 6; l++)
+                  TableRow(children: [SizedBox(height: 20)]),
+                TableRow(
+                  decoration: new BoxDecoration(
+                      border:
+                          Border.symmetric(horizontal: BorderSide(width: .25))),
+                  children: [
+                    Text(''),
+                    Text('Total', textScaleFactor: .75),
+                    Text(''),
+                    Text('${packaging.toString()}', textScaleFactor: .75),
+                    Text('', textScaleFactor: .75),
+                    Text('${quantity.toString()}', textScaleFactor: .75),
+                    Text('', textScaleFactor: .75),
+                    Text('${amount.toString()}', textScaleFactor: .75),
+                    SizedBox(height: 20),
+                  ],
+                ),
+              ],
+              border: TableBorder.ex(
+                  horizontalInside: BorderSide.none,
+                  bottom: BorderSide(width: .25),
+                  top: BorderSide(width: .25),
+                  right: BorderSide(width: .25),
+                  left: BorderSide(width: .25),
+                  verticalInside: BorderSide(width: .25)),
+              columnWidths: {
+                0: FlexColumnWidth(0.5),
+                1: FlexColumnWidth(4.5),
+                2: FlexColumnWidth(2.5),
+                3: FlexColumnWidth(2),
+                4: FlexColumnWidth(2),
+                5: FlexColumnWidth(2),
+                6: FlexColumnWidth(3),
+                7: FlexColumnWidth(3.5),
+              },
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            Table(children: [
+              TableRow(children: [
+                Text('Amount',
+                    textScaleFactor: .75,
+                    style: TextStyle(fontWeight: FontWeight.bold)),
+                Text('SGST  $cgst%', textScaleFactor: .75),
+                Text('CGST  $cgst%', textScaleFactor: .75),
+                Text('IGST   $igst%', textScaleFactor: .75),
+                Text('TCS   ${panRate.toString()}%', textScaleFactor: .75),
+                Text('Net Payment',
+                    textScaleFactor: .75,
+                    style: TextStyle(fontWeight: FontWeight.bold)),
+                Text('Transport Cost', textScaleFactor: .75),
+                Text('Other Expenses - $otherExpenseName',
+                    textScaleFactor: .75),
+                Text('To Pay',
+                    textScaleFactor: .75,
+                    style: TextStyle(fontWeight: FontWeight.bold)),
+                SizedBox(height: 20),
+              ]),
+              TableRow(children: [
+                Text('${amount.toString()}', textScaleFactor: .75),
+                Text('$cgstAmount', textScaleFactor: .75),
+                Text('$cgstAmount', textScaleFactor: .75),
+                Text('$igstAmount', textScaleFactor: .75),
+                Text('${rate['TCS'].toString()}', textScaleFactor: .75),
+                Text('${rate['Net'].toString()}', textScaleFactor: .75),
+                Text('${frightRate['TotalFright'].toString()}',
+                    textScaleFactor: .75),
+                Text('${otherExpenseRate.toString()}', textScaleFactor: .75),
+                Text('${toPay.toString()}', textScaleFactor: .75),
+                SizedBox(height: 20),
+              ]),
+            ], columnWidths: {
+              0: FlexColumnWidth(2),
+              1: FlexColumnWidth(1),
+              2: FlexColumnWidth(1),
+              3: FlexColumnWidth(1),
+              4: FlexColumnWidth(1),
+              5: FlexColumnWidth(2),
+              6: FlexColumnWidth(1.5),
+              7: FlexColumnWidth(1.5),
+              8: FlexColumnWidth(2)
+            }, border: TableBorder.all(width: 0.25)),
+            SizedBox(
+              height: 3,
+            ),
+            Text('Amount Chargeable (in words)', style: TextStyle(fontSize: 8)),
+            Text('Indian Rupees ${toPayWords}Only',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11)),
+
+            SizedBox(
+              height: 20,
+            ),
+            Container(
+                child: Row(children: <Widget>[
+              Table(
+                children: [
+                  TableRow(children: [
+                    Text('BANK: ${value.bankName}',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 10)),
+                    Text('Declaration: ${value.description}',
+                        style: TextStyle(fontSize: 8)),
+                  ]),
+                  TableRow(children: [
+                    Text('A/C No.: ${value.accountNumber}',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 10)),
+                  ]),
+                  TableRow(children: [
+                    Text('RTGS/NEFT Code: ${value.ifsc}',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 10)),
+                  ]),
+                ],
+                columnWidths: {
+                  0: FixedColumnWidth(170),
+                  1: FixedColumnWidth(313)
+                },
+                border: TableBorder.ex(
+                    horizontalInside: BorderSide.none,
+                    bottom: BorderSide(width: .75),
+                    top: BorderSide(width: .75),
+                    right: BorderSide(width: .75),
+                    left: BorderSide(width: .75),
+                    verticalInside: BorderSide(width: .75)),
+              ),
+
+              // Table(children: [
+              //   TableRow(children: [
+              //     Text('Declaration: ${value.description}',
+              //         maxLines: 5, style: TextStyle(fontSize: 8)),
+              //   ]),
+              // ], border: TableBorder.all(width: .5))
+            ]))
+            //   TableRow(
+            //     // decoration: new BoxDecoration(
+            //     //     border:
+            //     //         Border.symmetric(horizontal: BorderSide(width: .25))),
+            //     children: [
+            //       Text(''),
+            //       Text('SGST  $cgst%', textScaleFactor: .75),
+            //       Text('$cgstAmount', textScaleFactor: .75),
+            //       SizedBox(height: 15),
+            //     ],
+            //   ),
+            //   TableRow(
+            //     // decoration: new BoxDecoration(
+            //     //     border:
+            //     //         Border.symmetric(horizontal: BorderSide(width: .25))),
+            //     children: [
+            //       Text(''),
+            //       Text('CGST  $cgst%', textScaleFactor: .75),
+            //       Text('$cgstAmount', textScaleFactor: .75),
+            //       SizedBox(height: 15),
+            //     ],
+            //   ),
+            //   TableRow(
+            //     // decoration: new BoxDecoration(
+            //     //     border:
+            //     //         Border.symmetric(horizontal: BorderSide(width: .25))),
+            //     children: [
+            //       Text(''),
+            //       Text('IGST   $igst%', textScaleFactor: .75),
+            //       Text('$igstAmount', textScaleFactor: .75),
+            //       SizedBox(height: 15),
+            //     ],
+            //   ),
+            //   TableRow(
+            //     // decoration: new BoxDecoration(
+            //     //     border:
+            //     //         Border.symmetric(horizontal: BorderSide(width: .25))),
+            //     children: [
+            //       Text(''),
+            //       Text('TCS   ${panRate.toString()}%', textScaleFactor: .75),
+            //       Text('${rate['TCS'].toString()}', textScaleFactor: .75),
+            //       SizedBox(height: 15),
+            //     ],
+            //   ),
+            //   TableRow(
+            //     // decoration: new BoxDecoration(
+            //     //     border:
+            //     //         Border.symmetric(horizontal: BorderSide(width: .25))),
+            //     children: [
+            //       Text(''),
+            //       Text('Net Payment',
+            //           textScaleFactor: .75,
+            //           style: TextStyle(fontWeight: FontWeight.bold)),
+            //       Text('${rate['Net'].toString()}', textScaleFactor: .75),
+            //       SizedBox(height: 20),
+            //     ],
+            //   ),
+            //   TableRow(
+            //     // decoration: new BoxDecoration(
+            //     //     border:
+            //     //         Border.symmetric(horizontal: BorderSide(width: .25))),
+            //     children: [
+            //       Text(''),
+            //       Text('Transport Cost', textScaleFactor: .75),
+            //       Text('${frightRate['TotalFright'].toString()}',
+            //           textScaleFactor: .75),
+            //       SizedBox(height: 15),
+            //     ],
+            //   ),
+            //   TableRow(
+            //     // decoration: new BoxDecoration(
+            //     //     border:
+            //     //         Border.symmetric(horizontal: BorderSide(width: .25))),
+            //     children: [
+            //       Text(''),
+            //       Text('Other Expenses - $otherExpenseName',
+            //           textScaleFactor: .75),
+            //       Text('${otherExpenseRate.toString()}', textScaleFactor: .75),
+            //       SizedBox(height: 15),
+            //     ],
+            //   ),
+            //   TableRow(
+            //     // decoration: new BoxDecoration(
+            //     //     border:
+            //     //         Border.symmetric(horizontal: BorderSide(width: .25))),
+            //     children: [
+            //       Text(''),
+            //       Text('Total Payment',
+            //           textScaleFactor: .75,
+            //           style: TextStyle(fontWeight: FontWeight.bold)),
+            //       Text(
+            //           '${(rate['Net'] + frightRate['TotalFright'] + otherExpenseRate).toString()}',
+            //           textScaleFactor: .75),
+            //       SizedBox(height: 20),
+            //     ],
+            //   ),
+            // ], columnWidths: {
+            //   0: FlexColumnWidth(13.5),
+            //   1: FlexColumnWidth(3),
+            //   2: FlexColumnWidth(3.5),
+            // }
+
+            //   Header(level: 1, text: 'What is Lorem Ipsum?'),
+            //   Paragraph(
+            //       text:
+            //           'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.'),
+            //   Paragraph(
+            //       text:
+            //           'It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using "Content here, content here", making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for "lorem ipsum" will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like).'),
+            //   Header(level: 1, text: 'Where does it come from?'),
+            //   Paragraph(
+            //       text:
+            //           'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.'),
+            //   Paragraph(
+            //       text:
+            //           'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.'),
+            //   Padding(padding: const EdgeInsets.all(10)),
+            //   Table.fromTextArray(context: context, data: const <List<String>>[
+            //     <String>['Year', 'Ipsum', 'Lorem'],
+            //     <String>['2000', 'Ipsum 1.0', 'Lorem 1'],
+            //     <String>['2001', 'Ipsum 1.1', 'Lorem 2'],
+            //     <String>['2002', 'Ipsum 1.2', 'Lorem 3'],
+            //     <String>['2003', 'Ipsum 1.3', 'Lorem 4'],
+            //     <String>['2004', 'Ipsum 1.4', 'Lorem 5'],
+            //     <String>['2004', 'Ipsum 1.5', 'Lorem 6'],
+            //     <String>['2006', 'Ipsum 1.6', 'Lorem 7'],
+            //     <String>['2007', 'Ipsum 1.7', 'Lorem 8'],
+            //     <String>['2008', 'Ipsum 1.7', 'Lorem 9'],
+            //   ]),
           ]));
+  print(NumberToWord().convert('en-in', 5748));
   //save PDF
 
   // final String dir = (await getApplicationDocumentsDirectory()).path;
@@ -116,7 +550,7 @@ reportView(
   //   ),
   // );
 
-  DateTime now = new DateTime.now();
+//  DateTime now = new DateTime.now();
   final String dir = (await getApplicationDocumentsDirectory()).path;
   // final String path = '$dir/report.pdf';
   String filePath = "$dir/$now-$partyName.pdf";
@@ -199,12 +633,11 @@ reportView(
         email: email,
         partyName: partyName,
         brokerName: brokerName,
-        product: product,
-        brand: brand,
-        rate: rate,
-        weight: weight,
+        invoice: invoice,
+        productList: productList,
         taxRate: taxRate,
         taxRateHalf: taxRateHalf,
+        interstate: interstate,
         pan: pan,
         panRate: panRate,
         frightRate: frightRate,

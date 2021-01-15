@@ -1,21 +1,26 @@
+import 'package:billing_system/billing/product_billing.dart';
 import 'package:billing_system/billing/tax.dart';
 import 'package:flutter/material.dart';
 
 class Packaging extends StatefulWidget {
-  final String partyName, brokerName, product, brand, email;
+  final String partyName, brokerName, product, email, invoice, hsn;
+  final List<Map<String, dynamic>> productList;
   const Packaging(
       {Key key,
       this.email,
       this.partyName,
       this.brokerName,
       this.product,
-      this.brand})
+      this.hsn,
+      this.invoice,
+      this.productList})
       : super(key: key);
   @override
   _PackagingState createState() => _PackagingState();
 }
 
 class _PackagingState extends State<Packaging> {
+  Map<String, dynamic> productTemp = {};
   String package = "", bag = "", ratePerQuintal = "", rate = "", weight = "";
   double total = 0, totalWeight = 0;
   TextEditingController packageInputController,
@@ -23,18 +28,29 @@ class _PackagingState extends State<Packaging> {
       ratePerQuintalInputController,
       totalRateInputController,
       totalWeightInputController;
+  int len = 0;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    len = widget.productList.length;
+  }
 
   void findRate() {
-    if (package != "" && ratePerQuintal != "" && bag != "")
+    if (package != "" && ratePerQuintal != "" && bag != "") {
       total = (double.parse(package) / 100) *
           double.parse(ratePerQuintal) *
           double.parse(bag);
-    print(total.toString());
-    setState(() {
-      rate = total.toString();
-      print(rate);
-      totalRateInputController = new TextEditingController(text: rate);
-    });
+      print(total.toString());
+
+      setState(() {
+        rate = total.toString();
+        print(rate);
+        totalRateInputController = new TextEditingController(text: rate);
+      });
+      listProduct();
+    }
   }
 
   void findWeight() {
@@ -45,6 +61,21 @@ class _PackagingState extends State<Packaging> {
       weight = totalWeight.toString();
       totalWeightInputController = new TextEditingController(text: weight);
     });
+  }
+
+  void listProduct() {
+    productTemp = {
+      'Product': widget.product,
+      'HSN': widget.hsn,
+      'Packaging': double.parse(package),
+      'Bag': bag,
+      'Weight': totalWeight,
+      'RatePerQuintal': ratePerQuintal,
+      'Rate': total
+    };
+    if (widget.productList.length > len) widget.productList.removeLast();
+    widget.productList.add(productTemp);
+    print(widget.productList.toString());
   }
 
   @override
@@ -59,6 +90,24 @@ class _PackagingState extends State<Packaging> {
               ),
             ),
           ),
+          actions: <Widget>[
+            IconButton(
+              icon: const Icon(Icons.add),
+              tooltip: 'Add Product',
+              onPressed: () async {
+                Navigator.of(context).push(
+                    MaterialPageRoute<Null>(builder: (BuildContext context) {
+                  return new ProductBilling(
+                    email: widget.email,
+                    partyName: widget.partyName,
+                    brokerName: widget.brokerName,
+                    invoice: widget.invoice,
+                    productList: widget.productList,
+                  );
+                }));
+              },
+            ),
+          ],
         ),
         body: Container(
             padding: EdgeInsets.all(20),
@@ -66,6 +115,25 @@ class _PackagingState extends State<Packaging> {
               child: new Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: <Widget>[
+                  TextFormField(
+                    decoration: InputDecoration(
+                        labelText: "Product",
+                        hintText: "${widget.product}",
+                        labelStyle: TextStyle(color: Colors.black),
+                        floatingLabelBehavior: FloatingLabelBehavior.always,
+                        prefixIcon: Icon(
+                          Icons.perm_identity,
+                          color: Colors.blue[400],
+                        )),
+                    enabled: false,
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 17.0,
+                    ),
+                  ),
+                  SizedBox(
+                    height: 25,
+                  ),
                   TextFormField(
                     onChanged: (value) {
                       package = value;
@@ -178,31 +246,63 @@ class _PackagingState extends State<Packaging> {
                     ),
                   ),
                   SizedBox(
-                    height: 50,
+                    height: 70,
                   ),
-                  RaisedButton(
-                      child: Text(
-                        'Next',
-                        style: TextStyle(color: Colors.black54),
+                  Row(
+                    children: <Widget>[
+                      Expanded(
+                        child: RaisedButton(
+                            child: Text(
+                              'Add Product',
+                              style: TextStyle(color: Colors.black54),
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: new BorderRadius.circular(5),
+                              side: BorderSide(color: Colors.black),
+                            ),
+                            padding: const EdgeInsets.all(20),
+                            onPressed: () async {
+                              Navigator.of(context).push(
+                                  MaterialPageRoute<Null>(
+                                      builder: (BuildContext context) {
+                                return new ProductBilling(
+                                  email: widget.email,
+                                  partyName: widget.partyName,
+                                  brokerName: widget.brokerName,
+                                  invoice: widget.invoice,
+                                  productList: widget.productList,
+                                );
+                              }));
+                            }),
                       ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: new BorderRadius.circular(5),
-                        side: BorderSide(color: Colors.black),
+                      SizedBox(
+                        width: 50,
                       ),
-                      padding: const EdgeInsets.all(20),
-                      onPressed: () async {
-                        Navigator.of(context).push(MaterialPageRoute<Null>(
-                            builder: (BuildContext context) {
-                          return new Taxation(
-                              email: widget.email,
-                              partyName: widget.partyName,
-                              brokerName: widget.brokerName,
-                              product: widget.product,
-                              brand: widget.brand,
-                              rate: total,
-                              weight: totalWeight);
-                        }));
-                      })
+                      Expanded(
+                          child: RaisedButton(
+                              child: Text(
+                                'Next',
+                                style: TextStyle(color: Colors.black54),
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: new BorderRadius.circular(5),
+                                side: BorderSide(color: Colors.black),
+                              ),
+                              padding: const EdgeInsets.all(20),
+                              onPressed: () async {
+                                Navigator.of(context).push(
+                                    MaterialPageRoute<Null>(
+                                        builder: (BuildContext context) {
+                                  return new Taxation(
+                                      email: widget.email,
+                                      partyName: widget.partyName,
+                                      brokerName: widget.brokerName,
+                                      invoice: widget.invoice,
+                                      productList: widget.productList);
+                                }));
+                              }))
+                    ],
+                  )
                 ],
               ),
             )));

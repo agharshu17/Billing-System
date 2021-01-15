@@ -3,21 +3,24 @@ import 'package:billing_system/billing/selectTransport.dart';
 import 'package:flutter/material.dart';
 
 class BillingTransport extends StatefulWidget {
-  final String partyName, brokerName, product, brand, pan, email;
-  final double rate, taxRate, taxRateHalf, panRate, weight;
+  final String partyName, brokerName, pan, email, invoice;
+  final double taxRate, taxRateHalf, panRate;
+  final bool interstate;
+  final List<Map<String, dynamic>> productList;
+  final Map<String, dynamic> rate;
   const BillingTransport(
       {Key key,
       this.email,
       this.partyName,
       this.brokerName,
-      this.product,
-      this.brand,
-      this.rate,
-      this.weight,
+      this.invoice,
+      this.productList,
       this.taxRate,
       this.taxRateHalf,
+      this.interstate,
       this.pan,
-      this.panRate})
+      this.panRate,
+      this.rate})
       : super(key: key);
   @override
   _ExpensesState createState() => _ExpensesState();
@@ -42,14 +45,17 @@ class _ExpensesState extends State<BillingTransport> {
       notransportInputController,
       weightInputController,
       totalFrightInputController;
+  double weightSum = 0;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     setState(() {
-      weightInputController =
-          TextEditingController(text: widget.weight.toString());
+      for (var x in widget.productList) {
+        weightSum += x['Weight'];
+      }
+      weightInputController = TextEditingController(text: weightSum.toString());
     });
   }
 
@@ -57,7 +63,7 @@ class _ExpensesState extends State<BillingTransport> {
     setState(() {
       if (inputRatePerQuintal != "" && advance != "") {
         totalFrightDouble =
-            (inputRatePerQuintalDouble * widget.weight) - advanceDouble;
+            (inputRatePerQuintalDouble * weightSum / 100) - advanceDouble;
         totalFrightInputController =
             TextEditingController(text: totalFrightDouble.toString());
       }
@@ -67,7 +73,7 @@ class _ExpensesState extends State<BillingTransport> {
   void func2() {
     setState(() {
       if (inputRatePerQuintal != "" && advance == "0") {
-        totalFrightDouble = (inputRatePerQuintalDouble * widget.weight);
+        totalFrightDouble = (inputRatePerQuintalDouble * weightSum / 100);
         totalFrightInputController =
             TextEditingController(text: totalFrightDouble.toString());
       }
@@ -190,6 +196,7 @@ class _ExpensesState extends State<BillingTransport> {
                                   color: Colors.black,
                                   fontSize: 17.0,
                                 ),
+                                enabled: false,
                               ),
                               TextFormField(
                                 onChanged: (value) {
@@ -275,15 +282,20 @@ class _ExpensesState extends State<BillingTransport> {
                                           email: widget.email,
                                           partyName: widget.partyName,
                                           brokerName: widget.brokerName,
-                                          product: widget.product,
-                                          brand: widget.brand,
-                                          rate: widget.rate,
-                                          weight: widget.weight,
+                                          invoice: widget.invoice,
+                                          productList: widget.productList,
                                           taxRate: widget.taxRate,
                                           taxRateHalf: widget.taxRateHalf,
+                                          interstate: widget.interstate,
                                           pan: widget.pan,
                                           panRate: widget.panRate,
-                                          frightRate: totalFrightDouble);
+                                          rate: widget.rate,
+                                          frightRate: {
+                                            'FrightRatePerQuintal':
+                                                inputRatePerQuintalDouble,
+                                            'Advance': advanceDouble,
+                                            'TotalFright': totalFrightDouble,
+                                          });
                                     }));
                                   }),
                             ]),
@@ -385,18 +397,24 @@ class _ExpensesState extends State<BillingTransport> {
                                         MaterialPageRoute<Null>(
                                             builder: (BuildContext context) {
                                       return new selectTransport(
-                                          email: widget.email,
-                                          partyName: widget.partyName,
-                                          brokerName: widget.brokerName,
-                                          product: widget.product,
-                                          brand: widget.brand,
-                                          rate: widget.rate,
-                                          weight: widget.weight,
-                                          taxRate: widget.taxRate,
-                                          taxRateHalf: widget.taxRateHalf,
-                                          pan: widget.pan,
-                                          panRate: widget.panRate,
-                                          frightRate: totalFrightDouble);
+                                        email: widget.email,
+                                        partyName: widget.partyName,
+                                        brokerName: widget.brokerName,
+                                        invoice: widget.invoice,
+                                        productList: widget.productList,
+                                        taxRate: widget.taxRate,
+                                        taxRateHalf: widget.taxRateHalf,
+                                        interstate: widget.interstate,
+                                        pan: widget.pan,
+                                        panRate: widget.panRate,
+                                        rate: widget.rate,
+                                        frightRate: {
+                                          'FrightRatePerQuintal':
+                                              inputRatePerQuintalDouble,
+                                          'Advance': advanceDouble,
+                                          'TotalFright': totalFrightDouble,
+                                        },
+                                      );
                                     }));
                                   }),
                             ]),
@@ -416,18 +434,25 @@ class _ExpensesState extends State<BillingTransport> {
                             Navigator.of(context).push(MaterialPageRoute<Null>(
                                 builder: (BuildContext context) {
                               return new Expenses(
-                                  email: widget.email,
-                                  partyName: widget.partyName,
-                                  brokerName: widget.brokerName,
-                                  product: widget.product,
-                                  brand: widget.brand,
-                                  rate: widget.rate,
-                                  weight: widget.weight,
-                                  taxRate: widget.taxRate,
-                                  taxRateHalf: widget.taxRateHalf,
-                                  pan: widget.pan,
-                                  panRate: widget.panRate,
-                                  frightRate: totalFrightDouble);
+                                email: widget.email,
+                                partyName: widget.partyName,
+                                brokerName: widget.brokerName,
+                                invoice: widget.invoice,
+                                productList: widget.productList,
+                                taxRate: widget.taxRate,
+                                taxRateHalf: widget.taxRateHalf,
+                                interstate: widget.interstate,
+                                pan: widget.pan,
+                                panRate: widget.panRate,
+                                rate: widget.rate,
+                                frightRate: {
+                                  'FrightRatePerQuintal':
+                                      inputRatePerQuintalDouble,
+                                  'Advance': advanceDouble,
+                                  'TotalFright': totalFrightDouble,
+                                },
+                                transport: [],
+                              );
                             }));
                           }),
                 ],

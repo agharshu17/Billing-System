@@ -7,21 +7,24 @@ import 'package:dropdownfield/dropdownfield.dart';
 import 'package:flutter/material.dart';
 
 class selectTransport extends StatefulWidget {
-  final String partyName, brokerName, product, brand, pan, email;
-  final double rate, taxRate, taxRateHalf, panRate, weight, frightRate;
+  final String partyName, brokerName, pan, email, invoice;
+  final double taxRate, taxRateHalf, panRate;
+  final bool interstate;
+  final Map<String, dynamic> rate, frightRate;
+  final List<Map<String, dynamic>> productList;
   const selectTransport(
       {Key key,
       this.email,
       this.partyName,
       this.brokerName,
-      this.product,
-      this.brand,
-      this.rate,
-      this.weight,
+      this.invoice,
+      this.productList,
       this.taxRate,
       this.taxRateHalf,
+      this.interstate,
       this.pan,
       this.panRate,
+      this.rate,
       this.frightRate})
       : super(key: key);
 
@@ -171,15 +174,16 @@ class _PartyBrokerState extends State<selectTransport> {
                                 email: widget.email,
                                 partyName: widget.partyName,
                                 brokerName: widget.brokerName,
-                                product: widget.product,
-                                brand: widget.brand,
-                                rate: widget.rate,
-                                weight: widget.weight,
+                                invoice: widget.invoice,
+                                productList: widget.productList,
                                 taxRate: widget.taxRate,
                                 taxRateHalf: widget.taxRateHalf,
+                                interstate: widget.interstate,
                                 pan: widget.pan,
                                 panRate: widget.panRate,
-                                frightRate: widget.frightRate);
+                                frightRate: widget.frightRate,
+                                rate: widget.rate,
+                                transport: [product, brand]);
                           }));
                         })
                   ],

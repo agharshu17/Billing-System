@@ -2,13 +2,7 @@ import 'package:flutter/material.dart';
 
 class CreateBill extends StatefulWidget {
   final String partyName, brokerName, product, brand, pan, otherExpenseName;
-  final double rate,
-      taxRate,
-      taxRateHalf,
-      panRate,
-      weight,
-      frightRate,
-      otherExpenseRate;
+  final double rate, taxRate, taxRateHalf, panRate, weight, otherExpenseRate;
   const CreateBill(
       {Key key,
       this.partyName,
@@ -21,7 +15,6 @@ class CreateBill extends StatefulWidget {
       this.taxRateHalf,
       this.pan,
       this.panRate,
-      this.frightRate,
       this.otherExpenseName,
       this.otherExpenseRate})
       : super(key: key);

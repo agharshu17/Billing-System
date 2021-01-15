@@ -21,10 +21,11 @@ class _RegisterState extends State<NewProduct> {
   String error = '';
 
   String name = "";
-  String brand = "";
+  String brand = "", hsn = "";
 
   TextEditingController nameInputController;
   TextEditingController brandInputController;
+  TextEditingController hsnInputController;
   bool _iscreated;
 
   @override
@@ -97,7 +98,7 @@ class _RegisterState extends State<NewProduct> {
                         if (_iscreated == true) {
                           print('------------');
                           for (var x in info) {
-                            if (x['Brand'].contains(brand)) {
+                            if (x['Brand'].values.contains(brand)) {
                               print(x['Brand']);
                               return "Brand Already Exists!";
                             }
@@ -121,6 +122,25 @@ class _RegisterState extends State<NewProduct> {
                       controller: brandInputController,
                       style: TextStyle(color: Colors.black, fontSize: 17.0),
                     ),
+                    TextFormField(
+                      validator: (val) =>
+                          val.length != 6 ? "Enter a 6 Digit HSN Number" : null,
+                      onChanged: (value) {
+                        setState(() {
+                          hsn = value.toUpperCase();
+                        });
+                      },
+                      decoration: InputDecoration(
+                          labelText: "HSN/SAC Number",
+                          hintText: "Enter HSN Number Here",
+                          labelStyle: TextStyle(color: Colors.black),
+                          prefixIcon: Icon(
+                            Icons.perm_identity,
+                            color: Colors.blue[400],
+                          )),
+                      controller: hsnInputController,
+                      style: TextStyle(color: Colors.black, fontSize: 17.0),
+                    ),
                     SizedBox(
                       height: 50,
                     ),
@@ -141,7 +161,7 @@ class _RegisterState extends State<NewProduct> {
               onPressed: () async {
                 if (_formKey.currentState.validate()) {
                   Database(email: widget.email)
-                      .createNewProduct(name, brand)
+                      .createNewProduct(name, brand, hsn)
                       .then((value) {
                     showDialog(
                         context: context,
@@ -156,6 +176,8 @@ class _RegisterState extends State<NewProduct> {
                       nameInputController = new TextEditingController(text: "");
                       brandInputController =
                           new TextEditingController(text: "");
+                      hsnInputController = new TextEditingController(text: "");
+                      hsn = "";
                       name = brand = "";
                     });
                   }).catchError((e) {

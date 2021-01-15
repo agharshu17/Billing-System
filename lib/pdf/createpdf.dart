@@ -10,31 +10,26 @@ import 'package:share/share.dart';
 class PDFCreator extends StatefulWidget {
   final String partyName,
       brokerName,
-      product,
-      brand,
+      invoice,
       pan,
       otherExpenseName,
       email,
       filePath;
-  final double rate,
-      taxRate,
-      taxRateHalf,
-      panRate,
-      weight,
-      frightRate,
-      otherExpenseRate;
+  final double taxRate, taxRateHalf, panRate, otherExpenseRate;
+  final Map<String, dynamic> frightRate;
+  final bool interstate;
   final Document pdf;
+  final List<Map<String, dynamic>> productList;
   const PDFCreator(
       {Key key,
       this.email,
       this.partyName,
       this.brokerName,
-      this.product,
-      this.brand,
-      this.rate,
-      this.weight,
+      this.invoice,
+      this.productList,
       this.taxRate,
       this.taxRateHalf,
+      this.interstate,
       this.pan,
       this.panRate,
       this.frightRate,

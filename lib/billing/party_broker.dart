@@ -1,3 +1,4 @@
+import 'package:billing_system/billing/invoice.dart';
 import 'package:billing_system/billing/product_billing.dart';
 import 'package:billing_system/shared/loading.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -334,7 +335,7 @@ class _PartyBrokerState extends State<PartyBroker> {
                         onPressed: () async {
                           Navigator.of(context).push(MaterialPageRoute<Null>(
                               builder: (BuildContext context) {
-                            return new ProductBilling(
+                            return new Invoice(
                                 email: widget.email,
                                 partyName: name,
                                 brokerName: broker_name);

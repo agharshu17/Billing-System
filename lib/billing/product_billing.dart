@@ -1,3 +1,4 @@
+import 'package:billing_system/billing/invoice.dart';
 import 'package:billing_system/billing/packaging.dart';
 import 'package:billing_system/billing/product_billing.dart';
 import 'package:billing_system/shared/loading.dart';
@@ -6,9 +7,16 @@ import 'package:dropdownfield/dropdownfield.dart';
 import 'package:flutter/material.dart';
 
 class ProductBilling extends StatefulWidget {
-  final String email, partyName, brokerName;
+  final String email, partyName, brokerName, invoice;
+  final List<Map<String, dynamic>> productList;
 
-  const ProductBilling({Key key, this.email, this.partyName, this.brokerName})
+  const ProductBilling(
+      {Key key,
+      this.email,
+      this.partyName,
+      this.brokerName,
+      this.invoice,
+      this.productList})
       : super(key: key);
 
   @override
@@ -18,9 +26,10 @@ class ProductBilling extends StatefulWidget {
 class _PartyBrokerState extends State<ProductBilling> {
   String product = '', brand = '';
   List<String> productList = [];
-  List<String> brandList = [];
+  Map<String, String> brandList = {};
   List<String> totalList = [];
   var firestore;
+  var hsn;
 
   static var info;
   var icon = Icons.edit;
@@ -29,6 +38,8 @@ class _PartyBrokerState extends State<ProductBilling> {
 
   TextEditingController productInputController;
   TextEditingController brandInputController;
+  TextEditingController hsnInputController =
+      new TextEditingController(text: "");
   bool _isEnabled;
 
   bool loading = true;
@@ -106,9 +117,10 @@ class _PartyBrokerState extends State<ProductBilling> {
 
                         setState(() {
                           brand = "";
-                          brandList = [];
-                          for (var x in info['Brand']) {
-                            brandList.add(x);
+                          brandList = {};
+                          print(info['Brand']);
+                          for (var x in info['Brand'].entries) {
+                            brandList[x.key] = x.value;
                           }
                           print(brandList);
                           _isEnabled = false;
@@ -126,16 +138,42 @@ class _PartyBrokerState extends State<ProductBilling> {
                     DropDownField(
                       onValueChanged: (value) {
                         //   if (product == "") brand = "";
-
-                        brand = value;
-
-                        _isEnabled = false;
+                        setState(() {
+                          brand = value;
+                          print(brand);
+                          print("--------------------------");
+                          print(brandList);
+                          hsn = (brandList.entries.firstWhere(
+                              (element) => element.value == brand,
+                              orElse: () => null)).key;
+                          print(hsn);
+                          hsnInputController =
+                              new TextEditingController(text: hsn);
+                          _isEnabled = false;
+                        });
                       },
                       value: brand,
                       required: false,
                       hintText: 'Select Brand',
                       labelText: 'Brand',
-                      items: brandList,
+                      items: brandList.values.toList(),
+                    ),
+                    SizedBox(
+                      height: 50,
+                    ),
+                    TextFormField(
+                      decoration: InputDecoration(
+                          labelText: "HSN Code",
+                          floatingLabelBehavior: FloatingLabelBehavior.always,
+                          labelStyle: TextStyle(color: Colors.black),
+                          hintText: hsn,
+                          prefixIcon: Icon(
+                            Icons.perm_identity,
+                            color: Colors.blue[400],
+                          )),
+                      enabled: false,
+                      controller: hsnInputController,
+                      style: TextStyle(color: Colors.black, fontSize: 17.0),
                     ),
                     SizedBox(
                       height: 50,
@@ -157,8 +195,10 @@ class _PartyBrokerState extends State<ProductBilling> {
                                 email: widget.email,
                                 partyName: widget.partyName,
                                 brokerName: widget.brokerName,
-                                product: product,
-                                brand: brand);
+                                product: '$product - $brand',
+                                hsn: hsn,
+                                invoice: widget.invoice,
+                                productList: widget.productList);
                           }));
                         })
                   ],

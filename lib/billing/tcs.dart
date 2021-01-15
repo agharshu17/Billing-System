@@ -2,19 +2,20 @@ import 'package:billing_system/billing/billingfinal.dart';
 import 'package:flutter/material.dart';
 
 class tcs extends StatefulWidget {
-  final String partyName, brokerName, product, brand, email;
-  final double rate, taxRate, taxRateHalf, weight;
+  final String partyName, brokerName, email, invoice;
+  final double taxRate, taxRateHalf;
+  final List<Map<String, dynamic>> productList;
+  final bool interstate;
   const tcs(
       {Key key,
       this.email,
       this.partyName,
       this.brokerName,
-      this.product,
-      this.brand,
-      this.rate,
-      this.weight,
+      this.invoice,
+      this.productList,
       this.taxRate,
-      this.taxRateHalf})
+      this.taxRateHalf,
+      this.interstate})
       : super(key: key);
   @override
   _tcsState createState() => _tcsState();
@@ -161,12 +162,11 @@ class _tcsState extends State<tcs> {
                                           email: widget.email,
                                           partyName: widget.partyName,
                                           brokerName: widget.brokerName,
-                                          product: widget.product,
-                                          brand: widget.brand,
-                                          rate: widget.rate,
-                                          weight: widget.weight,
+                                          invoice: widget.invoice,
+                                          productList: widget.productList,
                                           taxRate: widget.taxRate,
                                           taxRateHalf: widget.taxRateHalf,
+                                          interstate: widget.interstate,
                                           pan: 'Yes',
                                           panRate: inputRateDouble);
                                     }));
@@ -220,12 +220,11 @@ class _tcsState extends State<tcs> {
                                           email: widget.email,
                                           partyName: widget.partyName,
                                           brokerName: widget.brokerName,
-                                          product: widget.product,
-                                          brand: widget.brand,
-                                          rate: widget.rate,
-                                          weight: widget.weight,
+                                          invoice: widget.invoice,
+                                          productList: widget.productList,
                                           taxRate: widget.taxRate,
                                           taxRateHalf: widget.taxRateHalf,
+                                          interstate: widget.interstate,
                                           pan: 'No',
                                           panRate: inputRateDouble);
                                     }));
@@ -278,12 +277,11 @@ class _tcsState extends State<tcs> {
                                           email: widget.email,
                                           partyName: widget.partyName,
                                           brokerName: widget.brokerName,
-                                          product: widget.product,
-                                          brand: widget.brand,
-                                          rate: widget.rate,
-                                          weight: widget.weight,
+                                          invoice: widget.invoice,
+                                          productList: widget.productList,
                                           taxRate: widget.taxRate,
                                           taxRateHalf: widget.taxRateHalf,
+                                          interstate: widget.interstate,
                                           pan: 'NA',
                                           panRate: inputRateDouble);
                                     }));

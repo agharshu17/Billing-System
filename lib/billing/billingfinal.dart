@@ -4,19 +4,20 @@ import 'package:billing_system/shared/loading.dart';
 import 'package:flutter/material.dart';
 
 class billingAns extends StatefulWidget {
-  final String partyName, brokerName, product, brand, pan, email;
-  final double rate, taxRate, taxRateHalf, panRate, weight;
+  final String partyName, brokerName, pan, email, invoice;
+  final double taxRate, taxRateHalf, panRate;
+  final List<Map<String, dynamic>> productList;
+  final bool interstate;
   const billingAns(
       {Key key,
       this.email,
       this.partyName,
       this.brokerName,
-      this.product,
-      this.brand,
-      this.rate,
-      this.weight,
+      this.invoice,
+      this.productList,
       this.taxRate,
       this.taxRateHalf,
+      this.interstate,
       this.pan,
       this.panRate})
       : super(key: key);
@@ -34,13 +35,17 @@ class _billingAnsState extends State<billingAns> {
       totalPanInputController,
       totalInputController;
   bool loading = true;
+  double sum = 0;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     setState(() {
-      rateWithoutTax = widget.rate.toString();
+      for (var x in widget.productList) {
+        sum += x['Rate'];
+      }
+      rateWithoutTax = sum.toString();
       rateWithoutTaxInputController =
           new TextEditingController(text: rateWithoutTax);
       func();
@@ -52,29 +57,29 @@ class _billingAnsState extends State<billingAns> {
     if (widget.taxRate == 0 && widget.taxRateHalf == 0) {
       noTaxable = true;
       taxString = "Rate With No Tax";
-      rateWithTax = widget.rate.toString();
-      totalRateWithoutPan = widget.rate;
+      rateWithTax = sum.toString();
+      totalRateWithoutPan = sum;
     } else if (widget.taxRateHalf == 0) {
       igst = true;
       taxString = "IGST Rate";
-      double temp = widget.rate * widget.taxRate / 100;
+      double temp = sum * widget.taxRate / 100;
       rateWithTax = temp.toString();
-      totalRateWithoutPan = widget.rate + temp;
+      totalRateWithoutPan = sum + temp;
     } else {
       cgst = true;
       taxString = "CGST Rate";
-      double temp = widget.rate * widget.taxRateHalf / 100;
+      double temp = sum * widget.taxRateHalf / 100;
       rateWithTax = temp.toString();
-      totalRateWithoutPan = widget.rate + (2 * temp);
+      totalRateWithoutPan = sum + (2 * temp);
     }
     rateWithTaxInputController = new TextEditingController(text: rateWithTax);
   }
 
   void tcsfunc() {
     if (widget.pan == "Yes") {
-      panString = "TCS With PAN";
+      panString = "With PAN";
     } else if (widget.pan == "No")
-      panString = "TCS without PAN";
+      panString = "Without PAN";
     else
       panString = "No TCS";
     totalPan = totalRateWithoutPan * widget.panRate;
@@ -220,14 +225,18 @@ class _billingAnsState extends State<billingAns> {
                                     email: widget.email,
                                     partyName: widget.partyName,
                                     brokerName: widget.brokerName,
-                                    product: widget.product,
-                                    brand: widget.brand,
-                                    rate: widget.rate,
-                                    weight: widget.weight,
+                                    invoice: widget.invoice,
+                                    productList: widget.productList,
                                     taxRate: widget.taxRate,
                                     taxRateHalf: widget.taxRateHalf,
+                                    interstate: widget.interstate,
                                     pan: widget.pan,
-                                    panRate: widget.panRate);
+                                    panRate: widget.panRate,
+                                    rate: {
+                                      'TCS': totalPan,
+                                      'PanString': panString,
+                                      'Net': total,
+                                    });
                               }));
                             })
                       ]),

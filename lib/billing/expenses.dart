@@ -4,22 +4,27 @@ import 'package:billing_system/pdf/writepdf.dart';
 import 'package:flutter/material.dart';
 
 class Expenses extends StatefulWidget {
-  final String partyName, brokerName, product, brand, pan, email;
-  final double rate, taxRate, taxRateHalf, panRate, weight, frightRate;
+  final String partyName, brokerName, pan, email, invoice;
+  final double taxRate, taxRateHalf, panRate;
+  final bool interstate;
+  final List<Map<String, dynamic>> productList;
+  final List<String> transport;
+  final Map<String, dynamic> rate, frightRate;
   const Expenses(
       {Key key,
       this.email,
       this.partyName,
       this.brokerName,
-      this.product,
-      this.brand,
-      this.rate,
-      this.weight,
+      this.invoice,
+      this.productList,
       this.taxRate,
       this.taxRateHalf,
+      this.interstate,
       this.pan,
       this.panRate,
-      this.frightRate})
+      this.rate,
+      this.frightRate,
+      this.transport})
       : super(key: key);
   @override
   _ExpensesState createState() => _ExpensesState();
@@ -157,15 +162,16 @@ class _ExpensesState extends State<Expenses> {
                                         widget.email,
                                         widget.partyName,
                                         widget.brokerName,
-                                        widget.product,
-                                        widget.brand,
-                                        widget.rate,
-                                        widget.weight,
+                                        widget.invoice,
+                                        widget.productList,
                                         widget.taxRate,
                                         widget.taxRateHalf,
+                                        widget.interstate,
                                         widget.pan,
                                         widget.panRate,
                                         widget.frightRate,
+                                        widget.rate,
+                                        widget.transport,
                                         expenseName,
                                         expenseDouble);
                                   }),
@@ -188,15 +194,16 @@ class _ExpensesState extends State<Expenses> {
                                 widget.email,
                                 widget.partyName,
                                 widget.brokerName,
-                                widget.product,
-                                widget.brand,
-                                widget.rate,
-                                widget.weight,
+                                widget.invoice,
+                                widget.productList,
                                 widget.taxRate,
                                 widget.taxRateHalf,
+                                widget.interstate,
                                 widget.pan,
                                 widget.panRate,
                                 widget.frightRate,
+                                widget.rate,
+                                widget.transport,
                                 expenseName,
                                 expenseDouble);
                           }),

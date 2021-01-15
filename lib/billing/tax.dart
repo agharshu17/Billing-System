@@ -4,17 +4,15 @@ import 'package:billing_system/billing/tcs.dart';
 import 'package:flutter/material.dart';
 
 class Taxation extends StatefulWidget {
-  final String partyName, brokerName, product, brand, email;
-  final double rate, weight;
+  final String partyName, brokerName, email, invoice;
+  final List<Map<String, dynamic>> productList;
   const Taxation(
       {Key key,
       this.email,
       this.partyName,
       this.brokerName,
-      this.product,
-      this.brand,
-      this.rate,
-      this.weight})
+      this.invoice,
+      this.productList})
       : super(key: key);
   @override
   _PackagingState createState() => _PackagingState();
@@ -31,6 +29,7 @@ class _PackagingState extends State<Taxation> {
   bool _isEnabled = false;
   String inputRate = "";
   double inputRateDouble = 0, inputRateDoubleHalf = 0;
+  bool _boolInterstate = false;
   TextEditingController inputRateInputController;
   TextEditingController igstInputController,
       cgstInputController,
@@ -77,16 +76,18 @@ class _PackagingState extends State<Taxation> {
                       child: new Text(taxableChange),
                       color: Colors.blueAccent[600],
                       onPressed: () {
-                        if (taxable == false) {
+                        if (taxable == false && nontaxable == false) {
                           setState(() {
                             taxable = true;
                             nontaxable = false;
+                            _isEnabled = true;
                             tax = "Select State";
                             taxableChange = "Intra State";
                             nontaxableChange = "Inter State";
                           });
                         } else {
                           setState(() {
+                            _boolInterstate = false;
                             interstate = false;
                             intrastate = true;
                           });
@@ -100,17 +101,20 @@ class _PackagingState extends State<Taxation> {
                       child: new Text(nontaxableChange),
                       color: Colors.blueAccent[600],
                       onPressed: () {
-                        if (taxable == false) {
+                        if (taxable == false && nontaxable == false) {
                           setState(() {
                             nontaxable = true;
                             taxable = false;
-                            _isEnabled = true;
+                            _isEnabled = false;
+                            tax = "Select State";
+                            taxableChange = "Intra State";
+                            nontaxableChange = "Inter State";
                           });
                         } else {
                           setState(() {
+                            _boolInterstate = true;
                             interstate = true;
                             intrastate = false;
-                            _isEnabled = true;
                           });
                         }
                       },
@@ -145,7 +149,7 @@ class _PackagingState extends State<Taxation> {
                                       color: Colors.blue[400],
                                     )),
                                 controller: inputRateInputController,
-                                enabled: true,
+                                enabled: _isEnabled,
                                 style: TextStyle(
                                   color: Colors.black,
                                   fontSize: 17.0,
@@ -163,7 +167,7 @@ class _PackagingState extends State<Taxation> {
                                       color: Colors.blue[400],
                                     )),
                                 controller: igstInputController,
-                                enabled: false,
+                                enabled: _isEnabled,
                                 style: TextStyle(
                                   color: Colors.black,
                                   fontSize: 17.0,
@@ -190,12 +194,11 @@ class _PackagingState extends State<Taxation> {
                                           email: widget.email,
                                           partyName: widget.partyName,
                                           brokerName: widget.brokerName,
-                                          product: widget.product,
-                                          brand: widget.brand,
-                                          rate: widget.rate,
-                                          weight: widget.weight,
+                                          invoice: widget.invoice,
+                                          productList: widget.productList,
                                           taxRate: inputRateDouble,
-                                          taxRateHalf: inputRateDoubleHalf);
+                                          taxRateHalf: inputRateDoubleHalf,
+                                          interstate: _boolInterstate);
                                     }));
                                   }),
                             ]),
@@ -227,7 +230,7 @@ class _PackagingState extends State<Taxation> {
                                       color: Colors.blue[400],
                                     )),
                                 controller: inputRateInputController,
-                                enabled: true,
+                                enabled: _isEnabled,
                                 style: TextStyle(
                                   color: Colors.black,
                                   fontSize: 17.0,
@@ -245,7 +248,7 @@ class _PackagingState extends State<Taxation> {
                                       color: Colors.blue[400],
                                     )),
                                 controller: cgstInputController,
-                                enabled: false,
+                                enabled: _isEnabled,
                                 style: TextStyle(
                                   color: Colors.black,
                                   fontSize: 17.0,
@@ -263,7 +266,7 @@ class _PackagingState extends State<Taxation> {
                                       color: Colors.blue[400],
                                     )),
                                 controller: sgstInputController,
-                                enabled: false,
+                                enabled: _isEnabled,
                                 style: TextStyle(
                                   color: Colors.black,
                                   fontSize: 17.0,
@@ -290,72 +293,71 @@ class _PackagingState extends State<Taxation> {
                                           email: widget.email,
                                           partyName: widget.partyName,
                                           brokerName: widget.brokerName,
-                                          product: widget.product,
-                                          brand: widget.brand,
-                                          rate: widget.rate,
-                                          weight: widget.weight,
+                                          invoice: widget.invoice,
+                                          productList: widget.productList,
                                           taxRate: inputRateDouble,
-                                          taxRateHalf: inputRateDoubleHalf);
+                                          taxRateHalf: inputRateDoubleHalf,
+                                          interstate: _boolInterstate);
                                     }));
                                   }),
                             ]),
-                  !nontaxable
-                      ? Text('')
-                      : new Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: <Widget>[
-                              TextFormField(
-                                decoration: InputDecoration(
-                                    labelText: "Input Tax Percentage(%)",
-                                    hintText: '0',
-                                    floatingLabelBehavior:
-                                        FloatingLabelBehavior.always,
-                                    labelStyle: TextStyle(color: Colors.black),
-                                    prefixIcon: Icon(
-                                      Icons.perm_identity,
-                                      color: Colors.blue[400],
-                                    )),
-                                controller: inputRateInputController,
-                                enabled: false,
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 17.0,
-                                ),
-                              ),
-                              SizedBox(
-                                height: 50,
-                              ),
-                              RaisedButton(
-                                  child: Text(
-                                    'Next',
-                                    style: TextStyle(color: Colors.black54),
-                                  ),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: new BorderRadius.circular(5),
-                                    side: BorderSide(color: Colors.black),
-                                  ),
-                                  padding: const EdgeInsets.all(20),
-                                  onPressed: () async {
-                                    setState(() {
-                                      inputRateDouble = 0;
-                                      inputRateDoubleHalf = 0;
-                                    });
-                                    Navigator.of(context).push(
-                                        MaterialPageRoute<Null>(
-                                            builder: (BuildContext context) {
-                                      return new tcs(
-                                          email: widget.email,
-                                          partyName: widget.partyName,
-                                          brokerName: widget.brokerName,
-                                          product: widget.product,
-                                          brand: widget.brand,
-                                          rate: widget.rate,
-                                          weight: widget.weight,
-                                          taxRate: inputRateDouble,
-                                          taxRateHalf: inputRateDoubleHalf);
-                                    }));
-                                  })
-                            ]),
+                  //     !nontaxable
+                  //         ? Text('')
+                  //         : new Column(
+                  //             crossAxisAlignment: CrossAxisAlignment.stretch,
+                  //             children: <Widget>[
+                  //                 TextFormField(
+                  //                   decoration: InputDecoration(
+                  //                       labelText: "Input Tax Percentage(%)",
+                  //                       hintText: '0',
+                  //                       floatingLabelBehavior:
+                  //                           FloatingLabelBehavior.always,
+                  //                       labelStyle: TextStyle(color: Colors.black),
+                  //                       prefixIcon: Icon(
+                  //                         Icons.perm_identity,
+                  //                         color: Colors.blue[400],
+                  //                       )),
+                  //                   controller: inputRateInputController,
+                  //                   enabled: false,
+                  //                   style: TextStyle(
+                  //                     color: Colors.black,
+                  //                     fontSize: 17.0,
+                  //                   ),
+                  //                 ),
+                  //                 SizedBox(
+                  //                   height: 50,
+                  //                 ),
+                  //                 RaisedButton(
+                  //                     child: Text(
+                  //                       'Next',
+                  //                       style: TextStyle(color: Colors.black54),
+                  //                     ),
+                  //                     shape: RoundedRectangleBorder(
+                  //                       borderRadius: new BorderRadius.circular(5),
+                  //                       side: BorderSide(color: Colors.black),
+                  //                     ),
+                  //                     padding: const EdgeInsets.all(20),
+                  //                     onPressed: () async {
+                  //                       setState(() {
+                  //                         inputRateDouble = 0;
+                  //                         inputRateDoubleHalf = 0;
+                  //                       });
+                  //                       Navigator.of(context).push(
+                  //                           MaterialPageRoute<Null>(
+                  //                               builder: (BuildContext context) {
+                  //                         return new tcs(
+                  //                             email: widget.email,
+                  //                             partyName: widget.partyName,
+                  //                             brokerName: widget.brokerName,
+                  //                             product: widget.product,
+                  //                             brand: widget.brand,
+                  //                             rate: widget.rate,
+                  //                             weight: widget.weight,
+                  //                             taxRate: inputRateDouble,
+                  //                             taxRateHalf: inputRateDoubleHalf);
+                  //                       }));
+                  //                     })
+                  //               ]),
                 ],
               ),
             )));

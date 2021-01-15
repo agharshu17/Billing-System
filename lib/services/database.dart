@@ -104,24 +104,23 @@ class Database {
     await company.doc(email).collection('Broker').doc(name).delete();
   }
 
-  Future createNewProduct(name, brand) async {
+  Future createNewProduct(name, brand, hsn) async {
     await company.doc(email).collection('Product').doc(name).set({
       "Name": name,
-      "Brand": FieldValue.arrayUnion([brand]),
+      "Brand": {hsn: brand},
     }, SetOptions(merge: true));
   }
 
-  Future editProduct(name, brandremove, brandlist) async {
-    await company
-        .doc(email)
-        .collection('Product')
-        .doc(name)
-        .update({"Name": name, "Brand": FieldValue.arrayRemove(brandremove)});
-    await company
-        .doc(email)
-        .collection('Product')
-        .doc(name)
-        .update({"Name": name, "Brand": FieldValue.arrayUnion(brandlist)});
+  Future editProduct(name, brandlist) async {
+    // await company
+    //     .doc(email)
+    //     .collection('Product')
+    //     .doc(name)
+    //     .update({"Name": name, "Brand": FieldValue.arrayRemove(brandremove)});
+    await company.doc(email).collection('Product').doc(name).set({
+      "Name": name,
+      "Brand": {for (var b in brandlist.entries) b.key: b.value}
+    });
   }
 
   Future deleteProduct(name) async {
@@ -148,6 +147,7 @@ class Database {
   Future deleteTransport(name) async {
     await company.doc(email).collection('Transport').doc(name).delete();
   }
+
 //   List<profileCompany> _profileCompanyListfromSnapshot(QuerySnapshot snapshot) {
 //     return snapshot.docs.map((doc) {
 //       return profileCompany(
