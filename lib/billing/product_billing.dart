@@ -96,8 +96,8 @@ class _PartyBrokerState extends State<ProductBilling> {
                     Text(
                       'PRODUCT',
                       style: TextStyle(
-                        fontSize: 20,
-                        color: Colors.black38,
+                        fontSize: 15,
+                        color: Colors.black,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -133,7 +133,7 @@ class _PartyBrokerState extends State<ProductBilling> {
                       items: productList,
                     ),
                     SizedBox(
-                      height: 50,
+                      height: 25,
                     ),
                     DropDownField(
                       onValueChanged: (value) {
@@ -159,7 +159,7 @@ class _PartyBrokerState extends State<ProductBilling> {
                       items: brandList.values.toList(),
                     ),
                     SizedBox(
-                      height: 50,
+                      height: 25,
                     ),
                     TextFormField(
                       decoration: InputDecoration(
@@ -168,7 +168,7 @@ class _PartyBrokerState extends State<ProductBilling> {
                           labelStyle: TextStyle(color: Colors.black),
                           hintText: hsn,
                           prefixIcon: Icon(
-                            Icons.perm_identity,
+                            Icons.account_balance_wallet,
                             color: Colors.blue[400],
                           )),
                       enabled: false,

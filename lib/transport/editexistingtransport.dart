@@ -112,7 +112,7 @@ class _EditExistingPartyState extends State<EditExistingTransport> {
                                     FloatingLabelBehavior.always,
                                 labelStyle: TextStyle(color: Colors.black),
                                 prefixIcon: Icon(
-                                  Icons.perm_identity,
+                                  Icons.local_shipping,
                                   color: Colors.blue[400],
                                 )),
                             controller: nameInputController,
@@ -137,7 +137,7 @@ class _EditExistingPartyState extends State<EditExistingTransport> {
                                       FloatingLabelBehavior.always,
                                   labelStyle: TextStyle(color: Colors.black),
                                   prefixIcon: Icon(
-                                    Icons.perm_identity,
+                                    Icons.label_important,
                                     color: Colors.blue[400],
                                   )),
                               controller: brandInputController[key],

@@ -47,7 +47,7 @@ class _InvoiceState extends State<Invoice> {
                         hintText: "xxxx",
                         labelStyle: TextStyle(color: Colors.black),
                         prefixIcon: Icon(
-                          Icons.perm_identity,
+                          Icons.account_balance_wallet,
                           color: Colors.blue[400],
                         )),
                     controller: invoiceInputController,

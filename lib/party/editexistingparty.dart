@@ -127,6 +127,7 @@ class _EditExistingPartyState extends State<EditExistingParty> {
                                   color: Colors.blue[400],
                                 )),
                             controller: nameInputController,
+                            textCapitalization: TextCapitalization.characters,
                             enabled: false,
                             style:
                                 TextStyle(color: Colors.black, fontSize: 17.0),

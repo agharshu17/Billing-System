@@ -102,6 +102,7 @@ class _RegisterState extends State<NewParty> {
                           name = value;
                         });
                       },
+                      textCapitalization: TextCapitalization.characters,
                       decoration: InputDecoration(
                           labelText: "Party Name",
                           hintText: "Enter Party Name Here",

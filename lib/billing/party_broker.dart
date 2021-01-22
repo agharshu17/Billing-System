@@ -36,13 +36,13 @@ class _PartyBrokerState extends State<PartyBroker> {
   bool _isEnabled;
 
   String email;
-  String name;
+  String name = "";
   String office_address;
   String office_contact;
   String mobile_contact;
   String fssai;
   String gst;
-  String broker_name;
+  String broker_name = "";
   String broker_mobile_contact;
   bool loading = true;
 
@@ -106,8 +106,8 @@ class _PartyBrokerState extends State<PartyBroker> {
                     Text(
                       'PARTY',
                       style: TextStyle(
-                        fontSize: 20,
-                        color: Colors.black38,
+                        fontSize: 15,
+                        color: Colors.black,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -182,34 +182,29 @@ class _PartyBrokerState extends State<PartyBroker> {
                           floatingLabelBehavior: FloatingLabelBehavior.always,
                           labelStyle: TextStyle(color: Colors.black),
                           prefixIcon: Icon(
-                            Icons.perm_identity,
+                            Icons.email,
                             color: Colors.blue[400],
                           )),
                       controller: emailInputController,
                       enabled: false,
                       style: TextStyle(
-                          color: Colors.black38,
-                          fontSize: 17.0,
-                          fontWeight: FontWeight.bold),
+                        color: Colors.black,
+                        fontSize: 17.0,
+                      ),
                     ),
                     TextFormField(
                       decoration: InputDecoration(
                           labelText: "Mobile Number",
                           hintText: mobile_contact,
                           floatingLabelBehavior: FloatingLabelBehavior.always,
-                          labelStyle: TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.normal),
+                          labelStyle: TextStyle(color: Colors.black),
                           prefixIcon: Icon(
-                            Icons.perm_identity,
+                            Icons.phone_android,
                             color: Colors.blue[400],
                           )),
                       controller: mobileContactInputController,
                       enabled: false,
-                      style: TextStyle(
-                          color: Colors.black38,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 17.0),
+                      style: TextStyle(color: Colors.black, fontSize: 17.0),
                     ),
                     TextFormField(
                       decoration: InputDecoration(
@@ -218,12 +213,12 @@ class _PartyBrokerState extends State<PartyBroker> {
                           floatingLabelBehavior: FloatingLabelBehavior.always,
                           labelStyle: TextStyle(color: Colors.black),
                           prefixIcon: Icon(
-                            Icons.perm_identity,
+                            Icons.phone_android,
                             color: Colors.blue[400],
                           )),
                       controller: officeContactInputController,
                       enabled: false,
-                      style: TextStyle(color: Colors.black38, fontSize: 17.0),
+                      style: TextStyle(color: Colors.black, fontSize: 17.0),
                     ),
                     TextFormField(
                       decoration: InputDecoration(
@@ -232,7 +227,7 @@ class _PartyBrokerState extends State<PartyBroker> {
                           floatingLabelBehavior: FloatingLabelBehavior.always,
                           labelStyle: TextStyle(color: Colors.black),
                           prefixIcon: Icon(
-                            Icons.perm_identity,
+                            Icons.location_on,
                             color: Colors.blue[400],
                           )),
                       controller: officeAddressInputController,
@@ -244,9 +239,9 @@ class _PartyBrokerState extends State<PartyBroker> {
                           labelText: "FSSAI",
                           hintText: fssai,
                           floatingLabelBehavior: FloatingLabelBehavior.always,
-                          labelStyle: TextStyle(color: Colors.black38),
+                          labelStyle: TextStyle(color: Colors.black),
                           prefixIcon: Icon(
-                            Icons.perm_identity,
+                            Icons.account_balance_wallet,
                             color: Colors.blue[400],
                           )),
                       controller: fssaiInputController,
@@ -260,19 +255,20 @@ class _PartyBrokerState extends State<PartyBroker> {
                           floatingLabelBehavior: FloatingLabelBehavior.always,
                           labelStyle: TextStyle(color: Colors.black),
                           prefixIcon: Icon(
-                            Icons.perm_identity,
+                            Icons.account_balance_wallet,
                             color: Colors.blue[400],
                           )),
                       controller: gstInputController,
                       enabled: false,
-                      style: TextStyle(color: Colors.black38, fontSize: 17.0),
+                      style: TextStyle(color: Colors.black, fontSize: 17.0),
                     ),
                     SizedBox(
                       height: 100,
                     ),
                     Text(
                       'BROKER',
-                      style: TextStyle(fontSize: 20),
+                      style:
+                          TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                     ),
                     SizedBox(
                       height: 25,
@@ -312,7 +308,7 @@ class _PartyBrokerState extends State<PartyBroker> {
                           floatingLabelBehavior: FloatingLabelBehavior.always,
                           labelStyle: TextStyle(color: Colors.black),
                           prefixIcon: Icon(
-                            Icons.perm_identity,
+                            Icons.phone_android,
                             color: Colors.blue[400],
                           )),
                       controller: brokerMobileContactInputController,

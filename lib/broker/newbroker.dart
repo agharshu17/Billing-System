@@ -92,6 +92,7 @@ class _RegisterState extends State<NewBroker> {
                           name = value;
                         });
                       },
+                      textCapitalization: TextCapitalization.characters,
                       decoration: InputDecoration(
                           labelText: "Broker Name",
                           hintText: "Enter Broker Name Here",

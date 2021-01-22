@@ -36,15 +36,16 @@ class _DocumentsState extends State<Documents> {
         .then((value) {
       urls = value.data()['FilePath'];
       List tempKey = [], tempValue = [];
-      for (var i in urls.keys) tempKey.add(i);
-      print(tempKey);
-      for (var i in urls.values) tempValue.add(i);
+      urls.forEach((key, value) {
+        tempKey.add(key);
+        tempValue.add(value);
+      });
       for (int i = tempKey.length - 1; i >= 0; i--) {
         showKey.add(tempKey[i]);
         showValue.add(tempValue[i]);
       }
       print('-------------------');
-      print(showKey);
+      print(tempKey);
     });
     setState(() {
       loading = false;
@@ -115,7 +116,7 @@ class _DocumentsState extends State<Documents> {
                         padding: const EdgeInsets.all(16.0),
                         child: Text(
                           showKey[position],
-                          style: TextStyle(fontSize: 22.0),
+                          style: TextStyle(fontSize: 17.0),
                         ),
                       ),
                     ),

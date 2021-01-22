@@ -7,9 +7,7 @@ import 'package:dropdownfield/dropdownfield.dart';
 import 'package:flutter/material.dart';
 
 class selectTransport extends StatefulWidget {
-  final String partyName, brokerName, pan, email, invoice;
-  final double taxRate, taxRateHalf, panRate;
-  final bool interstate;
+  final String partyName, brokerName, email, invoice;
   final Map<String, dynamic> rate, frightRate;
   final List<Map<String, dynamic>> productList;
   const selectTransport(
@@ -19,11 +17,6 @@ class selectTransport extends StatefulWidget {
       this.brokerName,
       this.invoice,
       this.productList,
-      this.taxRate,
-      this.taxRateHalf,
-      this.interstate,
-      this.pan,
-      this.panRate,
       this.rate,
       this.frightRate})
       : super(key: key);
@@ -102,13 +95,13 @@ class _PartyBrokerState extends State<selectTransport> {
                     Text(
                       'TRANSPORT',
                       style: TextStyle(
-                        fontSize: 20,
-                        color: Colors.black38,
+                        fontSize: 17,
+                        color: Colors.black,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     SizedBox(
-                      height: 25,
+                      height: 50,
                     ),
                     DropDownField(
                       onValueChanged: (value) async {
@@ -138,7 +131,7 @@ class _PartyBrokerState extends State<selectTransport> {
                       items: productList,
                     ),
                     SizedBox(
-                      height: 50,
+                      height: 25,
                     ),
                     DropDownField(
                       onValueChanged: (value) {
@@ -176,11 +169,6 @@ class _PartyBrokerState extends State<selectTransport> {
                                 brokerName: widget.brokerName,
                                 invoice: widget.invoice,
                                 productList: widget.productList,
-                                taxRate: widget.taxRate,
-                                taxRateHalf: widget.taxRateHalf,
-                                interstate: widget.interstate,
-                                pan: widget.pan,
-                                panRate: widget.panRate,
                                 frightRate: widget.frightRate,
                                 rate: widget.rate,
                                 transport: [product, brand]);

@@ -7,6 +7,7 @@ import 'package:billing_system/home/product.dart';
 import 'package:billing_system/home/profile.dart';
 import 'package:billing_system/home/transportation.dart';
 import 'package:billing_system/services/auth.dart';
+import 'package:billing_system/shared/showAlertDialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -137,6 +138,11 @@ class _HomeState extends State<Home> {
       );
     }
 
+    func() async {
+      await _authService.signOut();
+      Navigator.pop(context);
+    }
+
     return Scaffold(
       backgroundColor: Colors.blue[100],
       appBar: AppBar(
@@ -145,7 +151,8 @@ class _HomeState extends State<Home> {
           icon: const Icon(Icons.account_box),
           tooltip: 'Sign Out',
           onPressed: () async {
-            await _authService.signOut();
+            await showAlertDialog(context, 'Cancel', 'Leave', 'Sign Out',
+                'Are you sure you want to Leave this Page?', func);
           },
         ),
         actions: <Widget>[

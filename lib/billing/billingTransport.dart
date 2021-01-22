@@ -3,9 +3,7 @@ import 'package:billing_system/billing/selectTransport.dart';
 import 'package:flutter/material.dart';
 
 class BillingTransport extends StatefulWidget {
-  final String partyName, brokerName, pan, email, invoice;
-  final double taxRate, taxRateHalf, panRate;
-  final bool interstate;
+  final String partyName, brokerName, email, invoice;
   final List<Map<String, dynamic>> productList;
   final Map<String, dynamic> rate;
   const BillingTransport(
@@ -15,11 +13,6 @@ class BillingTransport extends StatefulWidget {
       this.brokerName,
       this.invoice,
       this.productList,
-      this.taxRate,
-      this.taxRateHalf,
-      this.interstate,
-      this.pan,
-      this.panRate,
       this.rate})
       : super(key: key);
   @override
@@ -55,7 +48,8 @@ class _ExpensesState extends State<BillingTransport> {
       for (var x in widget.productList) {
         weightSum += x['Weight'];
       }
-      weightInputController = TextEditingController(text: weightSum.toString());
+      weightInputController =
+          TextEditingController(text: (weightSum / 100).toStringAsFixed(2));
     });
   }
 
@@ -65,7 +59,7 @@ class _ExpensesState extends State<BillingTransport> {
         totalFrightDouble =
             (inputRatePerQuintalDouble * weightSum / 100) - advanceDouble;
         totalFrightInputController =
-            TextEditingController(text: totalFrightDouble.toString());
+            TextEditingController(text: totalFrightDouble.toStringAsFixed(2));
       }
     });
   }
@@ -75,7 +69,7 @@ class _ExpensesState extends State<BillingTransport> {
       if (inputRatePerQuintal != "" && advance == "0") {
         totalFrightDouble = (inputRatePerQuintalDouble * weightSum / 100);
         totalFrightInputController =
-            TextEditingController(text: totalFrightDouble.toString());
+            TextEditingController(text: totalFrightDouble.toStringAsFixed(2));
       }
     });
   }
@@ -105,8 +99,8 @@ class _ExpensesState extends State<BillingTransport> {
                   Text(
                     transport,
                     style: TextStyle(
-                      fontSize: 20,
-                      color: Colors.black38,
+                      fontSize: 17,
+                      color: Colors.black,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -182,13 +176,13 @@ class _ExpensesState extends State<BillingTransport> {
                           children: <Widget>[
                               TextFormField(
                                 decoration: InputDecoration(
-                                    labelText: "Total Weight",
+                                    labelText: "Total Weight (Quintals)",
                                     hintText: '0',
                                     floatingLabelBehavior:
                                         FloatingLabelBehavior.always,
                                     labelStyle: TextStyle(color: Colors.black),
                                     prefixIcon: Icon(
-                                      Icons.perm_identity,
+                                      Icons.layers,
                                       color: Colors.blue[400],
                                     )),
                                 controller: weightInputController,
@@ -206,11 +200,11 @@ class _ExpensesState extends State<BillingTransport> {
                                   func();
                                 },
                                 decoration: InputDecoration(
-                                    labelText: "Fright Rate Per Quintal(Rs)",
+                                    labelText: "Fright Rate Per Quintal (Rs)",
                                     hintText: '0',
                                     labelStyle: TextStyle(color: Colors.black),
                                     prefixIcon: Icon(
-                                      Icons.perm_identity,
+                                      Icons.attach_money,
                                       color: Colors.blue[400],
                                     )),
                                 controller: inputRatePerQuintalInputController,
@@ -233,7 +227,7 @@ class _ExpensesState extends State<BillingTransport> {
                                         FloatingLabelBehavior.always,
                                     labelStyle: TextStyle(color: Colors.black),
                                     prefixIcon: Icon(
-                                      Icons.perm_identity,
+                                      Icons.attach_money,
                                       color: Colors.blue[400],
                                     )),
                                 controller: advanceInputController,
@@ -251,7 +245,7 @@ class _ExpensesState extends State<BillingTransport> {
                                         FloatingLabelBehavior.always,
                                     labelStyle: TextStyle(color: Colors.black),
                                     prefixIcon: Icon(
-                                      Icons.perm_identity,
+                                      Icons.monetization_on,
                                       color: Colors.blue[400],
                                     )),
                                 controller: totalFrightInputController,
@@ -284,17 +278,18 @@ class _ExpensesState extends State<BillingTransport> {
                                           brokerName: widget.brokerName,
                                           invoice: widget.invoice,
                                           productList: widget.productList,
-                                          taxRate: widget.taxRate,
-                                          taxRateHalf: widget.taxRateHalf,
-                                          interstate: widget.interstate,
-                                          pan: widget.pan,
-                                          panRate: widget.panRate,
                                           rate: widget.rate,
                                           frightRate: {
                                             'FrightRatePerQuintal':
-                                                inputRatePerQuintalDouble,
-                                            'Advance': advanceDouble,
-                                            'TotalFright': totalFrightDouble,
+                                                double.parse(
+                                                    inputRatePerQuintalDouble
+                                                        .toStringAsFixed(2)),
+                                            'Advance': double.parse(
+                                                advanceDouble
+                                                    .toStringAsFixed(2)),
+                                            'TotalFright': double.parse(
+                                                totalFrightDouble
+                                                    .toStringAsFixed(2)),
                                           });
                                     }));
                                   }),
@@ -306,13 +301,13 @@ class _ExpensesState extends State<BillingTransport> {
                           children: <Widget>[
                               TextFormField(
                                 decoration: InputDecoration(
-                                    labelText: "Total Weight",
+                                    labelText: "Total Weight (Quintals)",
                                     hintText: '0',
                                     floatingLabelBehavior:
                                         FloatingLabelBehavior.always,
                                     labelStyle: TextStyle(color: Colors.black),
                                     prefixIcon: Icon(
-                                      Icons.perm_identity,
+                                      Icons.layers,
                                       color: Colors.blue[400],
                                     )),
                                 controller: weightInputController,
@@ -329,11 +324,11 @@ class _ExpensesState extends State<BillingTransport> {
                                   func2();
                                 },
                                 decoration: InputDecoration(
-                                    labelText: "Fright Rate Per Quintal(Rs)",
+                                    labelText: "Fright Rate Per Quintal (Rs)",
                                     hintText: '0',
                                     labelStyle: TextStyle(color: Colors.black),
                                     prefixIcon: Icon(
-                                      Icons.perm_identity,
+                                      Icons.attach_money,
                                       color: Colors.blue[400],
                                     )),
                                 controller: inputRatePerQuintalInputController,
@@ -345,13 +340,13 @@ class _ExpensesState extends State<BillingTransport> {
                               ),
                               TextFormField(
                                 decoration: InputDecoration(
-                                    labelText: "Advance Payment",
+                                    labelText: "Advance Payment (Rs)",
                                     hintText: '0',
                                     floatingLabelBehavior:
                                         FloatingLabelBehavior.always,
                                     labelStyle: TextStyle(color: Colors.black),
                                     prefixIcon: Icon(
-                                      Icons.perm_identity,
+                                      Icons.attach_money,
                                       color: Colors.blue[400],
                                     )),
                                 controller: advanceInputController,
@@ -363,21 +358,21 @@ class _ExpensesState extends State<BillingTransport> {
                               ),
                               TextFormField(
                                 decoration: InputDecoration(
-                                    labelText: "Total Fright(Rs)",
+                                    labelText: "Total Fright (Rs)",
                                     hintText: '0',
                                     floatingLabelBehavior:
                                         FloatingLabelBehavior.always,
                                     labelStyle: TextStyle(color: Colors.black),
+                                    hintStyle: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 17.0,
+                                    ),
                                     prefixIcon: Icon(
-                                      Icons.perm_identity,
+                                      Icons.monetization_on,
                                       color: Colors.blue[400],
                                     )),
                                 controller: totalFrightInputController,
                                 enabled: false,
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 17.0,
-                                ),
                               ),
                               SizedBox(
                                 height: 50,
@@ -402,11 +397,6 @@ class _ExpensesState extends State<BillingTransport> {
                                         brokerName: widget.brokerName,
                                         invoice: widget.invoice,
                                         productList: widget.productList,
-                                        taxRate: widget.taxRate,
-                                        taxRateHalf: widget.taxRateHalf,
-                                        interstate: widget.interstate,
-                                        pan: widget.pan,
-                                        panRate: widget.panRate,
                                         rate: widget.rate,
                                         frightRate: {
                                           'FrightRatePerQuintal':
@@ -439,11 +429,6 @@ class _ExpensesState extends State<BillingTransport> {
                                 brokerName: widget.brokerName,
                                 invoice: widget.invoice,
                                 productList: widget.productList,
-                                taxRate: widget.taxRate,
-                                taxRateHalf: widget.taxRateHalf,
-                                interstate: widget.interstate,
-                                pan: widget.pan,
-                                panRate: widget.panRate,
                                 rate: widget.rate,
                                 frightRate: {
                                   'FrightRatePerQuintal':
@@ -451,7 +436,7 @@ class _ExpensesState extends State<BillingTransport> {
                                   'Advance': advanceDouble,
                                   'TotalFright': totalFrightDouble,
                                 },
-                                transport: [],
+                                transport: ['-', '-'],
                               );
                             }));
                           }),

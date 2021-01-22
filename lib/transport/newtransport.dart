@@ -86,10 +86,11 @@ class _RegisterState extends State<NewTransport> {
                           hintText: "Enter Transport Name Here",
                           labelStyle: TextStyle(color: Colors.black),
                           prefixIcon: Icon(
-                            Icons.perm_identity,
+                            Icons.local_shipping,
                             color: Colors.blue[400],
                           )),
                       controller: nameInputController,
+                      textCapitalization: TextCapitalization.characters,
                       style: TextStyle(color: Colors.black, fontSize: 17.0),
                     ),
                     TextFormField(
@@ -115,10 +116,11 @@ class _RegisterState extends State<NewTransport> {
                           hintText: "Enter Vehicle Number Here",
                           labelStyle: TextStyle(color: Colors.black),
                           prefixIcon: Icon(
-                            Icons.perm_identity,
+                            Icons.label_important,
                             color: Colors.blue[400],
                           )),
                       controller: vehicleInputController,
+                      textCapitalization: TextCapitalization.characters,
                       style: TextStyle(color: Colors.black, fontSize: 17.0),
                     ),
                     SizedBox(

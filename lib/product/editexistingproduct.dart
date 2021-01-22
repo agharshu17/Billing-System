@@ -120,7 +120,7 @@ class _EditExistingPartyState extends State<EditExistingProduct> {
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                         labelStyle: TextStyle(color: Colors.black),
                         prefixIcon: Icon(
-                          Icons.perm_identity,
+                          Icons.branding_watermark,
                           color: Colors.blue[400],
                         )),
                     controller: nameInputController,
@@ -158,7 +158,7 @@ class _EditExistingPartyState extends State<EditExistingProduct> {
                                   FloatingLabelBehavior.always,
                               labelStyle: TextStyle(color: Colors.black),
                               prefixIcon: Icon(
-                                Icons.perm_identity,
+                                Icons.label_important,
                                 color: Colors.blue[400],
                               )),
                           controller: entry.key,
@@ -181,7 +181,7 @@ class _EditExistingPartyState extends State<EditExistingProduct> {
                             floatingLabelBehavior: FloatingLabelBehavior.always,
                             labelStyle: TextStyle(color: Colors.black),
                             prefixIcon: Icon(
-                              Icons.perm_identity,
+                              Icons.label_important,
                               color: Colors.blue[400],
                             )),
                         controller: entry.value,

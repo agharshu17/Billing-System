@@ -87,7 +87,7 @@ class _RegisterState extends State<NewProduct> {
                           hintText: "Enter Product Name Here",
                           labelStyle: TextStyle(color: Colors.black),
                           prefixIcon: Icon(
-                            Icons.perm_identity,
+                            Icons.label_important,
                             color: Colors.blue[400],
                           )),
                       controller: nameInputController,
@@ -116,7 +116,7 @@ class _RegisterState extends State<NewProduct> {
                           hintText: "Enter Brand Name Here",
                           labelStyle: TextStyle(color: Colors.black),
                           prefixIcon: Icon(
-                            Icons.perm_identity,
+                            Icons.label_important,
                             color: Colors.blue[400],
                           )),
                       controller: brandInputController,
@@ -135,7 +135,7 @@ class _RegisterState extends State<NewProduct> {
                           hintText: "Enter HSN Number Here",
                           labelStyle: TextStyle(color: Colors.black),
                           prefixIcon: Icon(
-                            Icons.perm_identity,
+                            Icons.account_balance_wallet,
                             color: Colors.blue[400],
                           )),
                       controller: hsnInputController,

@@ -1,5 +1,7 @@
 import 'package:billing_system/pdf/reviewpdf.dart';
 import 'package:billing_system/pdf/writepdf.dart';
+import 'package:billing_system/screens/home.dart';
+import 'package:billing_system/shared/showAlertDialog.dart';
 
 import 'package:flutter/material.dart';
 import 'package:pdf/pdf.dart';
@@ -8,117 +10,144 @@ import 'package:printing/printing.dart';
 import 'package:share/share.dart';
 
 class PDFCreator extends StatefulWidget {
-  final String partyName,
-      brokerName,
-      invoice,
-      pan,
-      otherExpenseName,
-      email,
-      filePath;
-  final double taxRate, taxRateHalf, panRate, otherExpenseRate;
-  final Map<String, dynamic> frightRate;
-  final bool interstate;
+  final String filePath;
   final Document pdf;
-  final List<Map<String, dynamic>> productList;
-  const PDFCreator(
-      {Key key,
-      this.email,
-      this.partyName,
-      this.brokerName,
-      this.invoice,
-      this.productList,
-      this.taxRate,
-      this.taxRateHalf,
-      this.interstate,
-      this.pan,
-      this.panRate,
-      this.frightRate,
-      this.otherExpenseName,
-      this.otherExpenseRate,
-      this.filePath,
-      this.pdf})
-      : super(key: key);
+  const PDFCreator({Key key, this.filePath, this.pdf}) : super(key: key);
   @override
   _PDFCreatorState createState() => _PDFCreatorState();
 }
 
 class _PDFCreatorState extends State<PDFCreator> {
+  func() {
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(
+        builder: (BuildContext context) => Home(),
+      ),
+      (route) => false,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: Center(
-            child: Text(
-              "Billing",
-              style: TextStyle(
-                color: Colors.white,
+    List items = [
+      "View",
+      "Share",
+      "Print",
+    ];
+    List icons = [
+      Icons.visibility,
+      Icons.share,
+      Icons.print,
+    ];
+    Container myArticles(int index) {
+      return Container(
+        child: Align(
+          alignment: Alignment.center,
+          child: Container(
+            child: FlatButton(
+              child: Card(
+                color: Colors.black,
+                child: Padding(
+                  padding: EdgeInsets.all(5),
+                  child: Stack(
+                    children: <Widget>[
+                      Center(
+                        child: Icon(
+                          icons[index],
+                          color: Colors.blue,
+                          size: 50,
+                        ),
+                      ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      Padding(
+                        padding: EdgeInsets.all(10),
+                        child: Container(
+                          width: 200,
+                          height: 30,
+                          child: Text(
+                            items[index],
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16.0,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
+              onPressed: () async {
+                if (index == 0) {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => PdfViewerPage(path: widget.filePath),
+                    ),
+                  );
+                } else if (index == 1) {
+                  final RenderBox box = context.findRenderObject();
+
+                  if (widget.filePath.isNotEmpty) {
+                    await Share.shareFiles([widget.filePath],
+                        text: 'Bill',
+                        sharePositionOrigin:
+                            box.localToGlobal(Offset.zero) & box.size);
+                  } else {
+                    print('Something went wrong!');
+                  }
+                } else if (index == 2) {
+                  await Printing.layoutPdf(
+                      onLayout: (PdfPageFormat format) async =>
+                          widget.pdf.save());
+                }
+              },
             ),
           ),
         ),
-        body: Container(
-          padding: EdgeInsets.all(20),
-          child: SingleChildScrollView(
-            child: new Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: <Widget>[
-                  RaisedButton(
-                      shape: new RoundedRectangleBorder(
-                        borderRadius: new BorderRadius.circular(5.0),
-                      ),
-                      child: Text(
-                        'View',
-                        style: TextStyle(
-                            color: Colors.white, fontWeight: FontWeight.bold),
-                      ),
-                      color: Colors.blue,
-                      onPressed: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) =>
-                                PdfViewerPage(path: widget.filePath),
-                          ),
-                        );
-                      }),
-                  RaisedButton(
-                      shape: new RoundedRectangleBorder(
-                        borderRadius: new BorderRadius.circular(5.0),
-                      ),
-                      child: Text(
-                        'Share',
-                        style: TextStyle(
-                            color: Colors.white, fontWeight: FontWeight.bold),
-                      ),
-                      color: Colors.blue,
-                      onPressed: () async {
-                        final RenderBox box = context.findRenderObject();
+      );
+    }
 
-                        if (widget.filePath.isNotEmpty) {
-                          await Share.shareFiles([widget.filePath],
-                              text: 'Bill',
-                              sharePositionOrigin:
-                                  box.localToGlobal(Offset.zero) & box.size);
-                        } else {
-                          print('Something went wrong!');
-                        }
-                      }),
-                  RaisedButton(
-                      shape: new RoundedRectangleBorder(
-                        borderRadius: new BorderRadius.circular(5.0),
-                      ),
-                      child: Text(
-                        'Print',
-                        style: TextStyle(
-                            color: Colors.white, fontWeight: FontWeight.bold),
-                      ),
-                      color: Colors.blue,
-                      onPressed: () async {
-                        await Printing.layoutPdf(
-                            onLayout: (PdfPageFormat format) async =>
-                                widget.pdf.save());
-                      })
-                ]),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Center(child: Text('Billing')),
+        actions: <Widget>[
+          IconButton(
+            icon: const Icon(Icons.home),
+            tooltip: 'Home',
+            onPressed: () {
+              showAlertDialog(context, 'Cancel', 'Leave', 'Go To Home',
+                  'Are you sure you want to leave this Page?', func);
+            },
           ),
-        ));
+        ],
+      ),
+      body: Column(
+        children: <Widget>[
+          SizedBox(
+            height: 50,
+          ),
+          Expanded(
+            child: Container(
+              child: Padding(
+                padding: const EdgeInsets.only(
+                    left: 100, right: 100, top: 30, bottom: 40),
+                child: Center(
+                  child: GridView.count(
+                    crossAxisCount: 1,
+                    children: List.generate(3, (index) {
+                      return myArticles(index);
+                    }),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

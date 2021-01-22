@@ -1,12 +1,9 @@
-import 'package:billing_system/billing/createbill.dart';
 import 'package:billing_system/pdf/createpdf.dart';
 import 'package:billing_system/pdf/writepdf.dart';
 import 'package:flutter/material.dart';
 
 class Expenses extends StatefulWidget {
-  final String partyName, brokerName, pan, email, invoice;
-  final double taxRate, taxRateHalf, panRate;
-  final bool interstate;
+  final String partyName, brokerName, email, invoice;
   final List<Map<String, dynamic>> productList;
   final List<String> transport;
   final Map<String, dynamic> rate, frightRate;
@@ -17,11 +14,6 @@ class Expenses extends StatefulWidget {
       this.brokerName,
       this.invoice,
       this.productList,
-      this.taxRate,
-      this.taxRateHalf,
-      this.interstate,
-      this.pan,
-      this.panRate,
       this.rate,
       this.frightRate,
       this.transport})
@@ -62,8 +54,8 @@ class _ExpensesState extends State<Expenses> {
                   Text(
                     "Any Other Expenses?",
                     style: TextStyle(
-                      fontSize: 20,
-                      color: Colors.black38,
+                      fontSize: 17,
+                      color: Colors.black,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -114,10 +106,12 @@ class _ExpensesState extends State<Expenses> {
                                     labelText: "Expense Name",
                                     labelStyle: TextStyle(color: Colors.black),
                                     prefixIcon: Icon(
-                                      Icons.perm_identity,
+                                      Icons.label_important,
                                       color: Colors.blue[400],
                                     )),
                                 controller: expenseNameInputController,
+                                textCapitalization:
+                                    TextCapitalization.characters,
                                 style: TextStyle(
                                   color: Colors.black,
                                   fontSize: 17.0,
@@ -129,13 +123,14 @@ class _ExpensesState extends State<Expenses> {
                                   expenseDouble = double.parse(expense);
                                 },
                                 decoration: InputDecoration(
-                                    labelText: "Expense Rate(Rs)",
+                                    labelText: "Expense Rate (Rs)",
                                     hintText: '0',
                                     labelStyle: TextStyle(color: Colors.black),
                                     prefixIcon: Icon(
-                                      Icons.perm_identity,
+                                      Icons.attach_money,
                                       color: Colors.blue[400],
                                     )),
+                                keyboardType: TextInputType.number,
                                 controller: expenseInputController,
                                 enabled: true,
                                 style: TextStyle(
@@ -164,11 +159,6 @@ class _ExpensesState extends State<Expenses> {
                                         widget.brokerName,
                                         widget.invoice,
                                         widget.productList,
-                                        widget.taxRate,
-                                        widget.taxRateHalf,
-                                        widget.interstate,
-                                        widget.pan,
-                                        widget.panRate,
                                         widget.frightRate,
                                         widget.rate,
                                         widget.transport,
@@ -196,11 +186,6 @@ class _ExpensesState extends State<Expenses> {
                                 widget.brokerName,
                                 widget.invoice,
                                 widget.productList,
-                                widget.taxRate,
-                                widget.taxRateHalf,
-                                widget.interstate,
-                                widget.pan,
-                                widget.panRate,
                                 widget.frightRate,
                                 widget.rate,
                                 widget.transport,

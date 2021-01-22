@@ -9,25 +9,9 @@ import 'package:pdf/widgets.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter/material.dart' as material;
 import 'package:intl/intl.dart';
-import 'package:json_table/json_table.dart';
 
-reportView(
-    context,
-    email,
-    partyName,
-    brokerName,
-    invoice,
-    productList,
-    taxRate,
-    taxRateHalf,
-    interstate,
-    pan,
-    panRate,
-    frightRate,
-    rate,
-    transport,
-    otherExpenseName,
-    otherExpenseRate) async {
+reportView(context, email, partyName, brokerName, invoice, productList,
+    frightRate, rate, transport, otherExpenseName, otherExpenseRate) async {
   var value = DatabasePdf(email: email);
   await value.companyInfo();
   await value.partyInfo(partyName);
@@ -35,7 +19,7 @@ reportView(
   await value.bankDescription();
   value.transportInfo(transport);
   String cgst = "", igst = "";
-  double cgstAmount = 0, igstAmount = 0;
+  String cgstAmount = "", igstAmount = "";
 
   int k = 0;
   final Document pdf = Document();
@@ -49,13 +33,15 @@ reportView(
     quantity += x['Weight'];
     amount += x['Rate'];
   }
+  print(amount);
 
-  if (taxRateHalf == 0) {
-    igst = taxRate.toString();
-    igstAmount = amount * taxRate / 100;
-  } else if (taxRate == 0) {
-    cgst = taxRateHalf.toString();
-    cgstAmount = amount * taxRateHalf / 100;
+  bool interstate = rate['TaxString'];
+  if (interstate == true) {
+    igst = rate['IGSTRate'].toString();
+    igstAmount = rate['TAX'];
+  } else if (interstate == false) {
+    cgst = rate['CGSTRate'].toString();
+    cgstAmount = rate['TAX'];
   }
 
   int toPay =
@@ -235,7 +221,7 @@ reportView(
                     Text('Vehicle No.: ${value.transportVehicle}',
                         style: TextStyle(fontSize: 10)),
                     Text(
-                        'Fright Rate: ${frightRate['frightRatePerQuintal'].toString()}',
+                        'Fright Rate: ${frightRate['FrightRatePerQuintal'].toString()}',
                         style: TextStyle(fontSize: 10)),
                     Text('(per quintal)', style: TextStyle(fontSize: 8)),
                     Text('Advance: ${frightRate['Advance'].toString()}',
@@ -269,7 +255,7 @@ reportView(
                     for (var j in i.values) Text('$j', textScaleFactor: .75),
                     SizedBox(height: 20),
                   ]),
-                for (int l = k; l < 6; l++)
+                for (int l = k; l < 4; l++)
                   TableRow(children: [SizedBox(height: 20)]),
                 TableRow(
                   decoration: new BoxDecoration(
@@ -316,8 +302,9 @@ reportView(
                     style: TextStyle(fontWeight: FontWeight.bold)),
                 Text('SGST  $cgst%', textScaleFactor: .75),
                 Text('CGST  $cgst%', textScaleFactor: .75),
-                Text('IGST   $igst%', textScaleFactor: .75),
-                Text('TCS   ${panRate.toString()}%', textScaleFactor: .75),
+                Text('IGST    $igst%', textScaleFactor: .75),
+                Text('TCS   ${rate['PanRate'].toString()}%',
+                    textScaleFactor: .75),
                 Text('Net Payment',
                     textScaleFactor: .75,
                     style: TextStyle(fontWeight: FontWeight.bold)),
@@ -359,7 +346,6 @@ reportView(
             Text('Amount Chargeable (in words)', style: TextStyle(fontSize: 8)),
             Text('Indian Rupees ${toPayWords}Only',
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11)),
-
             SizedBox(
               height: 20,
             ),
@@ -368,21 +354,12 @@ reportView(
               Table(
                 children: [
                   TableRow(children: [
-                    Text('BANK: ${value.bankName}',
+                    Text(
+                        'BANK:${value.bankName} A/C No.:${value.accountNumber} RTGS/NEFT Code:${value.ifsc}',
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 10)),
                     Text('Declaration: ${value.description}',
                         style: TextStyle(fontSize: 8)),
-                  ]),
-                  TableRow(children: [
-                    Text('A/C No.: ${value.accountNumber}',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 10)),
-                  ]),
-                  TableRow(children: [
-                    Text('RTGS/NEFT Code: ${value.ifsc}',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 10)),
                   ]),
                 ],
                 columnWidths: {
@@ -397,143 +374,7 @@ reportView(
                     left: BorderSide(width: .75),
                     verticalInside: BorderSide(width: .75)),
               ),
-
-              // Table(children: [
-              //   TableRow(children: [
-              //     Text('Declaration: ${value.description}',
-              //         maxLines: 5, style: TextStyle(fontSize: 8)),
-              //   ]),
-              // ], border: TableBorder.all(width: .5))
             ]))
-            //   TableRow(
-            //     // decoration: new BoxDecoration(
-            //     //     border:
-            //     //         Border.symmetric(horizontal: BorderSide(width: .25))),
-            //     children: [
-            //       Text(''),
-            //       Text('SGST  $cgst%', textScaleFactor: .75),
-            //       Text('$cgstAmount', textScaleFactor: .75),
-            //       SizedBox(height: 15),
-            //     ],
-            //   ),
-            //   TableRow(
-            //     // decoration: new BoxDecoration(
-            //     //     border:
-            //     //         Border.symmetric(horizontal: BorderSide(width: .25))),
-            //     children: [
-            //       Text(''),
-            //       Text('CGST  $cgst%', textScaleFactor: .75),
-            //       Text('$cgstAmount', textScaleFactor: .75),
-            //       SizedBox(height: 15),
-            //     ],
-            //   ),
-            //   TableRow(
-            //     // decoration: new BoxDecoration(
-            //     //     border:
-            //     //         Border.symmetric(horizontal: BorderSide(width: .25))),
-            //     children: [
-            //       Text(''),
-            //       Text('IGST   $igst%', textScaleFactor: .75),
-            //       Text('$igstAmount', textScaleFactor: .75),
-            //       SizedBox(height: 15),
-            //     ],
-            //   ),
-            //   TableRow(
-            //     // decoration: new BoxDecoration(
-            //     //     border:
-            //     //         Border.symmetric(horizontal: BorderSide(width: .25))),
-            //     children: [
-            //       Text(''),
-            //       Text('TCS   ${panRate.toString()}%', textScaleFactor: .75),
-            //       Text('${rate['TCS'].toString()}', textScaleFactor: .75),
-            //       SizedBox(height: 15),
-            //     ],
-            //   ),
-            //   TableRow(
-            //     // decoration: new BoxDecoration(
-            //     //     border:
-            //     //         Border.symmetric(horizontal: BorderSide(width: .25))),
-            //     children: [
-            //       Text(''),
-            //       Text('Net Payment',
-            //           textScaleFactor: .75,
-            //           style: TextStyle(fontWeight: FontWeight.bold)),
-            //       Text('${rate['Net'].toString()}', textScaleFactor: .75),
-            //       SizedBox(height: 20),
-            //     ],
-            //   ),
-            //   TableRow(
-            //     // decoration: new BoxDecoration(
-            //     //     border:
-            //     //         Border.symmetric(horizontal: BorderSide(width: .25))),
-            //     children: [
-            //       Text(''),
-            //       Text('Transport Cost', textScaleFactor: .75),
-            //       Text('${frightRate['TotalFright'].toString()}',
-            //           textScaleFactor: .75),
-            //       SizedBox(height: 15),
-            //     ],
-            //   ),
-            //   TableRow(
-            //     // decoration: new BoxDecoration(
-            //     //     border:
-            //     //         Border.symmetric(horizontal: BorderSide(width: .25))),
-            //     children: [
-            //       Text(''),
-            //       Text('Other Expenses - $otherExpenseName',
-            //           textScaleFactor: .75),
-            //       Text('${otherExpenseRate.toString()}', textScaleFactor: .75),
-            //       SizedBox(height: 15),
-            //     ],
-            //   ),
-            //   TableRow(
-            //     // decoration: new BoxDecoration(
-            //     //     border:
-            //     //         Border.symmetric(horizontal: BorderSide(width: .25))),
-            //     children: [
-            //       Text(''),
-            //       Text('Total Payment',
-            //           textScaleFactor: .75,
-            //           style: TextStyle(fontWeight: FontWeight.bold)),
-            //       Text(
-            //           '${(rate['Net'] + frightRate['TotalFright'] + otherExpenseRate).toString()}',
-            //           textScaleFactor: .75),
-            //       SizedBox(height: 20),
-            //     ],
-            //   ),
-            // ], columnWidths: {
-            //   0: FlexColumnWidth(13.5),
-            //   1: FlexColumnWidth(3),
-            //   2: FlexColumnWidth(3.5),
-            // }
-
-            //   Header(level: 1, text: 'What is Lorem Ipsum?'),
-            //   Paragraph(
-            //       text:
-            //           'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.'),
-            //   Paragraph(
-            //       text:
-            //           'It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using "Content here, content here", making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for "lorem ipsum" will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like).'),
-            //   Header(level: 1, text: 'Where does it come from?'),
-            //   Paragraph(
-            //       text:
-            //           'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.'),
-            //   Paragraph(
-            //       text:
-            //           'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.'),
-            //   Padding(padding: const EdgeInsets.all(10)),
-            //   Table.fromTextArray(context: context, data: const <List<String>>[
-            //     <String>['Year', 'Ipsum', 'Lorem'],
-            //     <String>['2000', 'Ipsum 1.0', 'Lorem 1'],
-            //     <String>['2001', 'Ipsum 1.1', 'Lorem 2'],
-            //     <String>['2002', 'Ipsum 1.2', 'Lorem 3'],
-            //     <String>['2003', 'Ipsum 1.3', 'Lorem 4'],
-            //     <String>['2004', 'Ipsum 1.4', 'Lorem 5'],
-            //     <String>['2004', 'Ipsum 1.5', 'Lorem 6'],
-            //     <String>['2006', 'Ipsum 1.6', 'Lorem 7'],
-            //     <String>['2007', 'Ipsum 1.7', 'Lorem 8'],
-            //     <String>['2008', 'Ipsum 1.7', 'Lorem 9'],
-            //   ]),
           ]));
   print(NumberToWord().convert('en-in', 5748));
   //save PDF
@@ -571,7 +412,7 @@ reportView(
   await storageReference.listAll().then((result) async {
     print(result.items);
     print(result.items.length);
-    if (result.items.length >= 10) {
+    if (result.items.length >= 20) {
       var x = result.items.elementAt(0);
       var url = await FirebaseStorage.instance.ref(x.fullPath).getDownloadURL();
       deleteValue = url.toString();
@@ -629,22 +470,7 @@ reportView(
 
   material.Navigator.of(context).push(material.MaterialPageRoute<Null>(
       builder: (material.BuildContext context) {
-    return new PDFCreator(
-        email: email,
-        partyName: partyName,
-        brokerName: brokerName,
-        invoice: invoice,
-        productList: productList,
-        taxRate: taxRate,
-        taxRateHalf: taxRateHalf,
-        interstate: interstate,
-        pan: pan,
-        panRate: panRate,
-        frightRate: frightRate,
-        otherExpenseName: otherExpenseName,
-        otherExpenseRate: otherExpenseRate,
-        filePath: filePath,
-        pdf: pdf);
+    return new PDFCreator(filePath: filePath, pdf: pdf);
   }));
 
   // var image;

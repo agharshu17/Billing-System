@@ -45,7 +45,7 @@ class _PackagingState extends State<Packaging> {
       print(total.toString());
 
       setState(() {
-        rate = total.toString();
+        rate = total.toStringAsFixed(2);
         print(rate);
         totalRateInputController = new TextEditingController(text: rate);
       });
@@ -58,7 +58,7 @@ class _PackagingState extends State<Packaging> {
       totalWeight = (double.parse(package)) * double.parse(bag);
     print(totalWeight.toString());
     setState(() {
-      weight = totalWeight.toString();
+      weight = totalWeight.toStringAsFixed(2);
       totalWeightInputController = new TextEditingController(text: weight);
     });
   }
@@ -69,9 +69,9 @@ class _PackagingState extends State<Packaging> {
       'HSN': widget.hsn,
       'Packaging': double.parse(package),
       'Bag': bag,
-      'Weight': totalWeight,
+      'Weight': double.parse(totalWeight.toStringAsFixed(2)),
       'RatePerQuintal': ratePerQuintal,
-      'Rate': total
+      'Rate': double.parse(total.toStringAsFixed(2))
     };
     if (widget.productList.length > len) widget.productList.removeLast();
     widget.productList.add(productTemp);
@@ -121,18 +121,25 @@ class _PackagingState extends State<Packaging> {
                         hintText: "${widget.product}",
                         labelStyle: TextStyle(color: Colors.black),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
+                        hintStyle: TextStyle(
+                            color: Colors.black,
+                            fontSize: 17.0,
+                            fontWeight: FontWeight.bold),
                         prefixIcon: Icon(
-                          Icons.perm_identity,
+                          Icons.grain,
                           color: Colors.blue[400],
                         )),
                     enabled: false,
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 17.0,
-                    ),
                   ),
                   SizedBox(
-                    height: 25,
+                    height: 50,
+                  ),
+                  Text(
+                    "Weight",
+                    style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black),
                   ),
                   TextFormField(
                     onChanged: (value) {
@@ -145,7 +152,7 @@ class _PackagingState extends State<Packaging> {
                         hintText: "xxx kgs",
                         labelStyle: TextStyle(color: Colors.black),
                         prefixIcon: Icon(
-                          Icons.perm_identity,
+                          Icons.layers,
                           color: Colors.blue[400],
                         )),
                     controller: packageInputController,
@@ -157,7 +164,7 @@ class _PackagingState extends State<Packaging> {
                     ),
                   ),
                   SizedBox(
-                    height: 25,
+                    height: 10,
                   ),
                   TextFormField(
                     onChanged: (value) {
@@ -170,7 +177,7 @@ class _PackagingState extends State<Packaging> {
                         hintText: "xxxxx",
                         labelStyle: TextStyle(color: Colors.black),
                         prefixIcon: Icon(
-                          Icons.perm_identity,
+                          Icons.card_travel,
                           color: Colors.blue[400],
                         )),
                     controller: bagInputController,
@@ -182,7 +189,7 @@ class _PackagingState extends State<Packaging> {
                     ),
                   ),
                   SizedBox(
-                    height: 25,
+                    height: 10,
                   ),
                   TextFormField(
                     decoration: InputDecoration(
@@ -190,8 +197,12 @@ class _PackagingState extends State<Packaging> {
                         hintText: '0 kgs',
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                         labelStyle: TextStyle(color: Colors.black),
+                        hintStyle: TextStyle(
+                          color: Colors.black,
+                          fontSize: 17.0,
+                        ),
                         prefixIcon: Icon(
-                          Icons.perm_identity,
+                          Icons.line_weight,
                           color: Colors.blue[400],
                         )),
                     controller: totalWeightInputController,
@@ -204,17 +215,24 @@ class _PackagingState extends State<Packaging> {
                   SizedBox(
                     height: 50,
                   ),
+                  Text(
+                    "Rate",
+                    style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black),
+                  ),
                   TextFormField(
                     onChanged: (value) {
                       ratePerQuintal = value;
                       findRate();
                     },
                     decoration: InputDecoration(
-                        labelText: "Rate per Quintal",
+                        labelText: "Rate per Quintal(Rs)",
                         hintText: "xxx Rs",
                         labelStyle: TextStyle(color: Colors.black),
                         prefixIcon: Icon(
-                          Icons.perm_identity,
+                          Icons.attach_money,
                           color: Colors.blue[400],
                         )),
                     controller: ratePerQuintalInputController,
@@ -226,7 +244,7 @@ class _PackagingState extends State<Packaging> {
                     ),
                   ),
                   SizedBox(
-                    height: 25,
+                    height: 10,
                   ),
                   TextFormField(
                     decoration: InputDecoration(
@@ -234,16 +252,16 @@ class _PackagingState extends State<Packaging> {
                         hintText: '0 Rs',
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                         labelStyle: TextStyle(color: Colors.black),
+                        hintStyle: TextStyle(
+                          color: Colors.black,
+                          fontSize: 17.0,
+                        ),
                         prefixIcon: Icon(
-                          Icons.perm_identity,
+                          Icons.monetization_on,
                           color: Colors.blue[400],
                         )),
                     controller: totalRateInputController,
                     enabled: false,
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 17.0,
-                    ),
                   ),
                   SizedBox(
                     height: 70,

@@ -25,7 +25,7 @@ class _tcsState extends State<tcs> {
   bool tcsyes = false, tcsno = false, panyes = false, panno = false;
   String tcsChange = "YES";
   String nontcsChange = "NO";
-  String tcs = "TCS";
+  String tcs = " TCS";
   bool _isEnabled = false;
   String inputRate = "";
   double inputRateDouble = 0, inputRateDoubleHalf = 0;
@@ -58,8 +58,8 @@ class _tcsState extends State<tcs> {
                   Text(
                     tcs,
                     style: TextStyle(
-                      fontSize: 20,
-                      color: Colors.black38,
+                      fontSize: 17,
+                      color: Colors.black,
                       fontWeight: FontWeight.bold,
                     ),
                   ),

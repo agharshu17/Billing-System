@@ -60,8 +60,8 @@ class _PackagingState extends State<Taxation> {
                   Text(
                     tax,
                     style: TextStyle(
-                      fontSize: 20,
-                      color: Colors.black38,
+                      fontSize: 17,
+                      color: Colors.black,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -81,7 +81,7 @@ class _PackagingState extends State<Taxation> {
                             taxable = true;
                             nontaxable = false;
                             _isEnabled = true;
-                            tax = "Select State";
+                            tax = "Trade Type";
                             taxableChange = "Intra State";
                             nontaxableChange = "Inter State";
                           });
@@ -106,7 +106,7 @@ class _PackagingState extends State<Taxation> {
                             nontaxable = true;
                             taxable = false;
                             _isEnabled = false;
-                            tax = "Select State";
+                            tax = "Trade Type";
                             taxableChange = "Intra State";
                             nontaxableChange = "Inter State";
                           });

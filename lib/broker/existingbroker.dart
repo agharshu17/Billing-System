@@ -2,6 +2,7 @@ import 'package:billing_system/broker/editexistingbroker.dart';
 import 'package:billing_system/party/editexistingparty.dart';
 import 'package:billing_system/screens/dialog.dart';
 import 'package:billing_system/services/database.dart';
+import 'package:billing_system/shared/showAlertDialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
@@ -84,41 +85,11 @@ class _ExistingPartyState extends State<ExistingBroker> {
     super.initState();
   }
 
-  showAlertDialog(BuildContext context) {
-    // set up the buttons
-    Widget cancelButton = FlatButton(
-      child: Text("Cancel"),
-      onPressed: () {
-        Navigator.pop(context);
-      },
-    );
-    Widget continueButton = FlatButton(
-      child: Text("Delete"),
-      onPressed: () {
-        Database(email: widget.email)
-            .deleteBroker(name)
-            .then((value) => print('success'));
-        Navigator.pop(context);
-      },
-    );
-
-    // set up the AlertDialog
-    AlertDialog alert = AlertDialog(
-      title: Text("Delete the Broker"),
-      content: Text("Are you sure you want to delete the broker?"),
-      actions: [
-        cancelButton,
-        continueButton,
-      ],
-    );
-
-    // show the dialog
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return alert;
-      },
-    );
+  func() {
+    Database(email: widget.email)
+        .deleteBroker(name)
+        .then((value) => print('success'));
+    Navigator.pop(context);
   }
 
   @override
@@ -181,7 +152,13 @@ class _ExistingPartyState extends State<ExistingBroker> {
                             },
                             onLongPress: () {
                               name = values[position].toString();
-                              showAlertDialog(context);
+                              showAlertDialog(
+                                  context,
+                                  'Cancel',
+                                  'Delete',
+                                  'Delete the Broker',
+                                  'Are you sure you want to Delete this Broker?',
+                                  func);
                             },
                             child: Card(
                               child: Padding(

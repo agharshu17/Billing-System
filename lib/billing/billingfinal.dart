@@ -45,7 +45,7 @@ class _billingAnsState extends State<billingAns> {
       for (var x in widget.productList) {
         sum += x['Rate'];
       }
-      rateWithoutTax = sum.toString();
+      rateWithoutTax = sum.toStringAsFixed(2);
       rateWithoutTaxInputController =
           new TextEditingController(text: rateWithoutTax);
       func();
@@ -56,20 +56,20 @@ class _billingAnsState extends State<billingAns> {
   void func() {
     if (widget.taxRate == 0 && widget.taxRateHalf == 0) {
       noTaxable = true;
-      taxString = "Rate With No Tax";
-      rateWithTax = sum.toString();
+      taxString = "Rate With No Tax (Rs)";
+      rateWithTax = sum.toStringAsFixed(2);
       totalRateWithoutPan = sum;
     } else if (widget.taxRateHalf == 0) {
       igst = true;
-      taxString = "IGST Rate";
+      taxString = "IGST Rate (Rs)";
       double temp = sum * widget.taxRate / 100;
-      rateWithTax = temp.toString();
+      rateWithTax = temp.toStringAsFixed(2);
       totalRateWithoutPan = sum + temp;
     } else {
       cgst = true;
-      taxString = "CGST Rate";
+      taxString = "CGST Rate (Rs)";
       double temp = sum * widget.taxRateHalf / 100;
-      rateWithTax = temp.toString();
+      rateWithTax = temp.toStringAsFixed(2);
       totalRateWithoutPan = sum + (2 * temp);
     }
     rateWithTaxInputController = new TextEditingController(text: rateWithTax);
@@ -82,11 +82,12 @@ class _billingAnsState extends State<billingAns> {
       panString = "Without PAN";
     else
       panString = "No TCS";
-    totalPan = totalRateWithoutPan * widget.panRate;
+    totalPan = totalRateWithoutPan * widget.panRate / 100;
     totalPanInputController =
-        new TextEditingController(text: totalPan.toString());
+        new TextEditingController(text: totalPan.toStringAsFixed(2));
     total = totalRateWithoutPan + totalPan;
-    totalInputController = new TextEditingController(text: total.toString());
+    totalInputController =
+        new TextEditingController(text: total.toStringAsFixed(2));
     loading = false;
   }
 
@@ -116,12 +117,12 @@ class _billingAnsState extends State<billingAns> {
                         ),
                         TextFormField(
                           decoration: InputDecoration(
-                              labelText: "Rate without taxes",
+                              labelText: "Rate without taxes (Rs)",
                               floatingLabelBehavior:
                                   FloatingLabelBehavior.always,
                               labelStyle: TextStyle(color: Colors.black),
                               prefixIcon: Icon(
-                                Icons.perm_identity,
+                                Icons.attach_money,
                                 color: Colors.blue[400],
                               )),
                           controller: rateWithoutTaxInputController,
@@ -131,6 +132,17 @@ class _billingAnsState extends State<billingAns> {
                             fontSize: 17.0,
                           ),
                         ),
+                        SizedBox(
+                          height: 50,
+                        ),
+                        Text(
+                          'TAX',
+                          style: TextStyle(
+                            fontSize: 15,
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                         TextFormField(
                           decoration: InputDecoration(
                               labelText: taxString,
@@ -138,7 +150,7 @@ class _billingAnsState extends State<billingAns> {
                                   FloatingLabelBehavior.always,
                               labelStyle: TextStyle(color: Colors.black),
                               prefixIcon: Icon(
-                                Icons.perm_identity,
+                                Icons.attach_money,
                                 color: Colors.blue[400],
                               )),
                           controller: rateWithTaxInputController,
@@ -152,12 +164,12 @@ class _billingAnsState extends State<billingAns> {
                             ? Text('')
                             : TextFormField(
                                 decoration: InputDecoration(
-                                    labelText: "SGST Rate",
+                                    labelText: "SGST Rate (Rs)",
                                     floatingLabelBehavior:
                                         FloatingLabelBehavior.always,
                                     labelStyle: TextStyle(color: Colors.black),
                                     prefixIcon: Icon(
-                                      Icons.perm_identity,
+                                      Icons.attach_money,
                                       color: Colors.blue[400],
                                     )),
                                 controller: rateWithTaxInputController,
@@ -167,14 +179,25 @@ class _billingAnsState extends State<billingAns> {
                                   fontSize: 17.0,
                                 ),
                               ),
+                        SizedBox(
+                          height: 50,
+                        ),
+                        Text(
+                          'TCS',
+                          style: TextStyle(
+                            fontSize: 15,
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                         TextFormField(
                           decoration: InputDecoration(
-                              labelText: panString,
+                              labelText: 'Rate $panString (Rs)',
                               floatingLabelBehavior:
                                   FloatingLabelBehavior.always,
                               labelStyle: TextStyle(color: Colors.black),
                               prefixIcon: Icon(
-                                Icons.perm_identity,
+                                Icons.attach_money,
                                 color: Colors.blue[400],
                               )),
                           controller: totalPanInputController,
@@ -187,14 +210,22 @@ class _billingAnsState extends State<billingAns> {
                         SizedBox(
                           height: 50,
                         ),
+                        Text(
+                          'AMOUNT',
+                          style: TextStyle(
+                            fontSize: 15,
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                         TextFormField(
                           decoration: InputDecoration(
-                              labelText: "Billing Amount",
+                              labelText: "Billing Amount (Rs)",
                               floatingLabelBehavior:
                                   FloatingLabelBehavior.always,
                               labelStyle: TextStyle(color: Colors.black),
                               prefixIcon: Icon(
-                                Icons.perm_identity,
+                                Icons.monetization_on,
                                 color: Colors.blue[400],
                               )),
                           controller: totalInputController,
@@ -227,15 +258,17 @@ class _billingAnsState extends State<billingAns> {
                                     brokerName: widget.brokerName,
                                     invoice: widget.invoice,
                                     productList: widget.productList,
-                                    taxRate: widget.taxRate,
-                                    taxRateHalf: widget.taxRateHalf,
-                                    interstate: widget.interstate,
-                                    pan: widget.pan,
-                                    panRate: widget.panRate,
                                     rate: {
-                                      'TCS': totalPan,
+                                      'TaxString': widget.interstate,
+                                      'CGSTRate': widget.taxRateHalf,
+                                      'TAX': rateWithTax,
+                                      'IGSTRate': widget.taxRate,
+                                      'PanRate': widget.panRate,
+                                      'TCS': double.parse(
+                                          totalPan.toStringAsFixed(2)),
                                       'PanString': panString,
-                                      'Net': total,
+                                      'Net': double.parse(
+                                          total.toStringAsFixed(2)),
                                     });
                               }));
                             })
