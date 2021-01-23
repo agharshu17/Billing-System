@@ -1,10 +1,10 @@
-import 'package:billing_system/screens/terms_register.dart';
-import 'package:billing_system/shared/loading.dart';
+import 'package:Billing/screens/terms_register.dart';
+import 'package:Billing/shared/loading.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:billing_system/services/database.dart';
+import 'package:Billing/services/database.dart';
 
 class AccountRegister extends StatefulWidget {
   final String email;
@@ -63,6 +63,7 @@ class _RegisterState extends State<AccountRegister> {
                                 bankName = value;
                               });
                             },
+                            textCapitalization: TextCapitalization.characters,
                             decoration: InputDecoration(
                                 labelText: "Bank Name",
                                 hintText: "PNB",
@@ -90,6 +91,8 @@ class _RegisterState extends State<AccountRegister> {
                                 labelText: "Account Number",
                                 hintText: "xxxxxxxxxx",
                                 labelStyle: TextStyle(color: Colors.black)),
+                            textCapitalization: TextCapitalization.characters,
+                            keyboardType: TextInputType.number,
                             style: TextStyle(color: Colors.black, fontSize: 17),
                           ),
                           TextFormField(
@@ -110,6 +113,7 @@ class _RegisterState extends State<AccountRegister> {
                                 hintText: "xxxxxxxxxxx",
                                 labelStyle: TextStyle(color: Colors.black)),
                             controller: ifscInputController,
+                            textCapitalization: TextCapitalization.characters,
                             style:
                                 TextStyle(color: Colors.black, fontSize: 17.0),
                           ),

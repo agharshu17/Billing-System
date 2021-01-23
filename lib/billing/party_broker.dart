@@ -1,6 +1,6 @@
-import 'package:billing_system/billing/invoice.dart';
-import 'package:billing_system/billing/product_billing.dart';
-import 'package:billing_system/shared/loading.dart';
+import 'package:Billing/billing/invoice.dart';
+import 'package:Billing/billing/product_billing.dart';
+import 'package:Billing/shared/loading.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dropdownfield/dropdownfield.dart';
 import 'package:flutter/material.dart';

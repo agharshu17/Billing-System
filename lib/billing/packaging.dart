@@ -1,5 +1,5 @@
-import 'package:billing_system/billing/product_billing.dart';
-import 'package:billing_system/billing/tax.dart';
+import 'package:Billing/billing/product_billing.dart';
+import 'package:Billing/billing/tax.dart';
 import 'package:flutter/material.dart';
 
 class Packaging extends StatefulWidget {
@@ -69,7 +69,7 @@ class _PackagingState extends State<Packaging> {
       'HSN': widget.hsn,
       'Packaging': double.parse(package),
       'Bag': bag,
-      'Weight': double.parse(totalWeight.toStringAsFixed(2)),
+      'Weight': double.parse((totalWeight / 100).toStringAsFixed(2)),
       'RatePerQuintal': ratePerQuintal,
       'Rate': double.parse(total.toStringAsFixed(2))
     };

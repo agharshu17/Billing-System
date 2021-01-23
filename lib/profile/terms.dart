@@ -1,9 +1,9 @@
-import 'package:billing_system/shared/loading.dart';
+import 'package:Billing/shared/loading.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:billing_system/services/database.dart';
+import 'package:Billing/services/database.dart';
 
 class Terms extends StatefulWidget {
   final String email;
@@ -80,6 +80,7 @@ class _AccountState extends State<Terms> {
                             enabled: _isEnabled,
                             keyboardType: TextInputType.multiline,
                             maxLines: null,
+                            textCapitalization: TextCapitalization.sentences,
                             decoration: InputDecoration(
                                 labelText: "Terms & Conditions",
                                 floatingLabelBehavior:

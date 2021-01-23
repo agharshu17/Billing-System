@@ -1,5 +1,5 @@
-import 'package:billing_system/billing/expenses.dart';
-import 'package:billing_system/billing/selectTransport.dart';
+import 'package:Billing/billing/expenses.dart';
+import 'package:Billing/billing/selectTransport.dart';
 import 'package:flutter/material.dart';
 
 class BillingTransport extends StatefulWidget {
@@ -49,7 +49,7 @@ class _ExpensesState extends State<BillingTransport> {
         weightSum += x['Weight'];
       }
       weightInputController =
-          TextEditingController(text: (weightSum / 100).toStringAsFixed(2));
+          TextEditingController(text: (weightSum).toStringAsFixed(2));
     });
   }
 
@@ -57,7 +57,7 @@ class _ExpensesState extends State<BillingTransport> {
     setState(() {
       if (inputRatePerQuintal != "" && advance != "") {
         totalFrightDouble =
-            (inputRatePerQuintalDouble * weightSum / 100) - advanceDouble;
+            (inputRatePerQuintalDouble * weightSum) - advanceDouble;
         totalFrightInputController =
             TextEditingController(text: totalFrightDouble.toStringAsFixed(2));
       }
@@ -67,7 +67,7 @@ class _ExpensesState extends State<BillingTransport> {
   void func2() {
     setState(() {
       if (inputRatePerQuintal != "" && advance == "0") {
-        totalFrightDouble = (inputRatePerQuintalDouble * weightSum / 100);
+        totalFrightDouble = (inputRatePerQuintalDouble * weightSum);
         totalFrightInputController =
             TextEditingController(text: totalFrightDouble.toStringAsFixed(2));
       }
@@ -208,6 +208,7 @@ class _ExpensesState extends State<BillingTransport> {
                                       color: Colors.blue[400],
                                     )),
                                 controller: inputRatePerQuintalInputController,
+                                keyboardType: TextInputType.number,
                                 enabled: true,
                                 style: TextStyle(
                                   color: Colors.black,
@@ -231,6 +232,7 @@ class _ExpensesState extends State<BillingTransport> {
                                       color: Colors.blue[400],
                                     )),
                                 controller: advanceInputController,
+                                keyboardType: TextInputType.number,
                                 enabled: _isEnabled,
                                 style: TextStyle(
                                   color: Colors.black,
@@ -311,6 +313,7 @@ class _ExpensesState extends State<BillingTransport> {
                                       color: Colors.blue[400],
                                     )),
                                 controller: weightInputController,
+                                enabled: false,
                                 style: TextStyle(
                                   color: Colors.black,
                                   fontSize: 17.0,
@@ -332,6 +335,7 @@ class _ExpensesState extends State<BillingTransport> {
                                       color: Colors.blue[400],
                                     )),
                                 controller: inputRatePerQuintalInputController,
+                                keyboardType: TextInputType.number,
                                 enabled: true,
                                 style: TextStyle(
                                   color: Colors.black,
@@ -372,6 +376,7 @@ class _ExpensesState extends State<BillingTransport> {
                                       color: Colors.blue[400],
                                     )),
                                 controller: totalFrightInputController,
+                                keyboardType: TextInputType.number,
                                 enabled: false,
                               ),
                               SizedBox(

@@ -1,7 +1,7 @@
-import 'package:billing_system/pdf/reviewpdf.dart';
-import 'package:billing_system/pdf/writepdf.dart';
-import 'package:billing_system/screens/home.dart';
-import 'package:billing_system/shared/showAlertDialog.dart';
+import 'package:Billing/pdf/reviewpdf.dart';
+import 'package:Billing/pdf/writepdf.dart';
+import 'package:Billing/screens/home.dart';
+import 'package:Billing/shared/showAlertDialog.dart';
 
 import 'package:flutter/material.dart';
 import 'package:pdf/pdf.dart';

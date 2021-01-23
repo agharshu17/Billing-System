@@ -19,7 +19,9 @@ class DatabasePdf {
       companyBankName = "",
       companyAccount = "",
       companyIfsc = "",
-      companyTerms = "";
+      companyTerms = "",
+      companyState = "",
+      companyStateCode = "";
 
   String partyEmail = "",
       partyAddress = "",
@@ -55,34 +57,42 @@ class DatabasePdf {
     companyAccount = info['Bank']['Account No'];
     companyIfsc = info['Bank']['IFSC Code'];
     companyTerms = info['Description'];
+    companyState = info['State']['Value'];
+    companyStateCode = info['State']['Code'];
     loading = true;
   }
 
   Future<void> partyInfo(String partyName) async {
-    await FirebaseFirestore.instance
-        .collection('Company')
-        .doc(email)
-        .collection('Party Name')
-        .doc(partyName)
-        .get()
-        .then((value) => info = value.data());
-    partyEmail = info['Email'];
-    partyAddress = info['Address']['Office'];
-    partyOfficeContact = info['Contact']['Office'];
-    partyMobileContact = info['Contact']['Mobile'];
-    partyGst = info['Tax']['GST No.'];
-    partyFssai = info['Tax']['FSSAI No.'];
+    if (partyName != "") {
+      await FirebaseFirestore.instance
+          .collection('Company')
+          .doc(email)
+          .collection('Party Name')
+          .doc(partyName)
+          .get()
+          .then((value) => info = value.data());
+      partyEmail = info['Email'];
+      partyAddress = info['Address']['Office'];
+      partyOfficeContact = info['Contact']['Office'];
+      partyMobileContact = info['Contact']['Mobile'];
+      partyGst = info['Tax']['GST No.'];
+      partyFssai = info['Tax']['FSSAI No.'];
+      partyState = info['State']['Value'];
+      partyStateCode = info['State']['Code'];
+    }
   }
 
   Future<void> brokerInfo(String brokerName) async {
-    await FirebaseFirestore.instance
-        .collection('Company')
-        .doc(email)
-        .collection('Broker')
-        .doc(brokerName)
-        .get()
-        .then((value) => info = value.data());
-    agentMobileContact = info['Mobile'];
+    if (brokerName != "") {
+      await FirebaseFirestore.instance
+          .collection('Company')
+          .doc(email)
+          .collection('Broker')
+          .doc(brokerName)
+          .get()
+          .then((value) => info = value.data());
+      agentMobileContact = info['Mobile'];
+    }
   }
 
   void transportInfo(List transport) {

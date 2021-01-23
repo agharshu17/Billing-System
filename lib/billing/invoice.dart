@@ -1,6 +1,6 @@
-import 'package:billing_system/billing/packaging.dart';
-import 'package:billing_system/billing/product_billing.dart';
-import 'package:billing_system/home/product.dart';
+import 'package:Billing/billing/packaging.dart';
+import 'package:Billing/billing/product_billing.dart';
+import 'package:Billing/home/product.dart';
 import 'package:flutter/material.dart';
 
 class Invoice extends StatefulWidget {

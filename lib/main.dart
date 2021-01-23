@@ -1,27 +1,29 @@
-import 'package:billing_system/home/billing.dart';
-import 'package:billing_system/home/broker.dart';
-import 'package:billing_system/home/documents.dart';
-import 'package:billing_system/home/party.dart';
-import 'package:billing_system/home/product.dart';
-import 'package:billing_system/home/profile.dart';
-import 'package:billing_system/home/transportation.dart';
-import 'package:billing_system/models/user.dart';
-import 'package:billing_system/profile/account.dart';
-import 'package:billing_system/profile/company.dart';
-import 'package:billing_system/profile/terms.dart';
-import 'package:billing_system/screens/home.dart';
-import 'package:billing_system/screens/register.dart';
-import 'package:billing_system/screens/sign-in.dart';
-import 'package:billing_system/screens/wrapper.dart';
-import 'package:billing_system/services/auth.dart';
+import 'package:Billing/home/billing.dart';
+import 'package:Billing/home/broker.dart';
+import 'package:Billing/home/documents.dart';
+import 'package:Billing/home/party.dart';
+import 'package:Billing/home/product.dart';
+import 'package:Billing/home/profile.dart';
+import 'package:Billing/home/transportation.dart';
+import 'package:Billing/models/user.dart';
+import 'package:Billing/profile/account.dart';
+import 'package:Billing/profile/company.dart';
+import 'package:Billing/profile/terms.dart';
+import 'package:Billing/screens/home.dart';
+import 'package:Billing/screens/register.dart';
+import 'package:Billing/screens/sign-in.dart';
+import 'package:Billing/screens/wrapper.dart';
+import 'package:Billing/services/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
   return runApp(MyApp());
 }
 

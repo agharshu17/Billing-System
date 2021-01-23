@@ -1,6 +1,7 @@
-import 'package:billing_system/models/user.dart';
-import 'package:billing_system/screens/home.dart';
-import 'package:billing_system/screens/sign-in.dart';
+import 'package:Billing/models/user.dart';
+import 'package:Billing/screens/home.dart';
+import 'package:Billing/screens/sign-in.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -10,6 +11,12 @@ class Wrapper extends StatefulWidget {
 }
 
 class _WrapperState extends State<Wrapper> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<MyUser>(context);

@@ -1,9 +1,9 @@
-import 'package:billing_system/shared/loading.dart';
+import 'package:Billing/shared/loading.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:billing_system/services/database.dart';
+import 'package:Billing/services/database.dart';
 
 class Account extends StatefulWidget {
   final String email;
@@ -102,6 +102,7 @@ class _AccountState extends State<Account> {
                                     FloatingLabelBehavior.always,
                                 labelStyle: TextStyle(color: Colors.black)),
                             style: TextStyle(color: Colors.black, fontSize: 17),
+                            textCapitalization: TextCapitalization.characters,
                           ),
                           TextFormField(
                             controller: accountInputController,
@@ -110,6 +111,7 @@ class _AccountState extends State<Account> {
                                 account = value;
                               });
                             },
+                            keyboardType: TextInputType.number,
                             decoration: InputDecoration(
                                 labelText: "Account Number",
                                 hintText: "xxxxxxxxx",
@@ -134,6 +136,7 @@ class _AccountState extends State<Account> {
                               });
                             },
                             enabled: _isEnabled,
+                            textCapitalization: TextCapitalization.characters,
                             decoration: InputDecoration(
                                 prefixIcon: Icon(
                                   Icons.branding_watermark,

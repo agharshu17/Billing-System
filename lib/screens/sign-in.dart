@@ -1,6 +1,6 @@
-import 'package:billing_system/screens/home.dart';
-import 'package:billing_system/services/auth.dart';
-import 'package:billing_system/shared/loading.dart';
+import 'package:Billing/screens/home.dart';
+import 'package:Billing/services/auth.dart';
+import 'package:Billing/shared/loading.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 

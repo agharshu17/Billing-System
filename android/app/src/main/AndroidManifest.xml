@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.billing_system">
+    package="com.example.Billing">
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <!-- io.flutter.app.FlutterApplication is an android.app.Application that
@@ -10,7 +10,7 @@
         
     <application
         android:name="io.flutter.app.FlutterApplication"
-        android:label="billing_system"
+        android:label="Billing"
         android:icon="@mipmap/ic_launcher">
 
         

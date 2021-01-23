@@ -1,9 +1,9 @@
-import 'package:billing_system/screens/dialog.dart';
+import 'package:Billing/screens/dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:billing_system/services/database.dart';
+import 'package:Billing/services/database.dart';
 
 class NewParty extends StatefulWidget {
   final String email;
@@ -27,6 +27,8 @@ class _RegisterState extends State<NewParty> {
   String mobile_contact = "";
   String fssai = "";
   String gst = "";
+  String state = "";
+  String stateCode = "";
 
   TextEditingController emailInputController;
   TextEditingController nameInputController;
@@ -35,6 +37,8 @@ class _RegisterState extends State<NewParty> {
   TextEditingController mobileContactInputController;
   TextEditingController fssaiInputController;
   TextEditingController gstInputController;
+  TextEditingController stateInputController;
+  TextEditingController stateCodeInputController;
   bool _iscreated = false;
 
   @override
@@ -200,6 +204,50 @@ class _RegisterState extends State<NewParty> {
                             color: Colors.blue[400],
                           )),
                       controller: officeAddressInputController,
+                      textCapitalization: TextCapitalization.sentences,
+                      style: TextStyle(color: Colors.black, fontSize: 17.0),
+                    ),
+                    SizedBox(
+                      height: 50,
+                    ),
+                    Text(
+                      'State Details',
+                      style: TextStyle(fontSize: 20),
+                    ),
+                    TextFormField(
+                      onChanged: (value) {
+                        setState(() {
+                          state = value;
+                        });
+                      },
+                      decoration: InputDecoration(
+                          labelText: "State",
+                          hintText: "",
+                          labelStyle: TextStyle(color: Colors.black),
+                          prefixIcon: Icon(
+                            Icons.location_on,
+                            color: Colors.blue[400],
+                          )),
+                      controller: stateInputController,
+                      style: TextStyle(color: Colors.black, fontSize: 17.0),
+                      textCapitalization: TextCapitalization.sentences,
+                    ),
+                    TextFormField(
+                      onChanged: (value) {
+                        setState(() {
+                          stateCode = value;
+                        });
+                      },
+                      decoration: InputDecoration(
+                          labelText: "State Code",
+                          hintText: "15",
+                          labelStyle: TextStyle(color: Colors.black),
+                          prefixIcon: Icon(
+                            Icons.location_on,
+                            color: Colors.blue[400],
+                          )),
+                      controller: stateCodeInputController,
+                      keyboardType: TextInputType.number,
                       style: TextStyle(color: Colors.black, fontSize: 17.0),
                     ),
                     SizedBox(
@@ -214,6 +262,7 @@ class _RegisterState extends State<NewParty> {
                           ? "Enter a 14 Digit FSSAI Number"
                           : null,
                       controller: fssaiInputController,
+                      textCapitalization: TextCapitalization.characters,
                       onChanged: (value) {
                         setState(() {
                           fssai = value;
@@ -234,6 +283,7 @@ class _RegisterState extends State<NewParty> {
                           ? "Enter a 15 Digit GST Number"
                           : null,
                       controller: gstInputController,
+                      textCapitalization: TextCapitalization.characters,
                       onChanged: (value) {
                         setState(() {
                           gst = value;
@@ -272,8 +322,16 @@ class _RegisterState extends State<NewParty> {
               onPressed: () async {
                 if (_formKey.currentState.validate()) {
                   Database(email: widget.email)
-                      .createNewParty(name, email, office_address,
-                          office_contact, mobile_contact, fssai, gst)
+                      .createNewParty(
+                          name,
+                          email,
+                          office_address,
+                          office_contact,
+                          mobile_contact,
+                          state,
+                          stateCode,
+                          fssai,
+                          gst)
                       .then((value) {
                     showDialog(
                         context: context,
@@ -297,8 +355,12 @@ class _RegisterState extends State<NewParty> {
                       fssaiInputController =
                           new TextEditingController(text: "");
                       gstInputController = new TextEditingController(text: "");
-                      name = email = office_address =
-                          mobile_contact = office_contact = fssai = gst = "";
+                      stateInputController =
+                          new TextEditingController(text: "");
+                      stateCodeInputController =
+                          new TextEditingController(text: "");
+                      name = email = office_address = mobile_contact =
+                          office_contact = state = stateCode = fssai = gst = "";
                     });
                   }).catchError((e) {
                     print(e);

@@ -1,7 +1,7 @@
-import 'package:billing_system/party/editexistingparty.dart';
-import 'package:billing_system/screens/dialog.dart';
-import 'package:billing_system/services/database.dart';
-import 'package:billing_system/shared/showAlertDialog.dart';
+import 'package:Billing/party/editexistingparty.dart';
+import 'package:Billing/screens/dialog.dart';
+import 'package:Billing/services/database.dart';
+import 'package:Billing/shared/showAlertDialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 

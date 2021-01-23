@@ -1,11 +1,11 @@
-import 'package:billing_system/screens/account_register.dart';
-import 'package:billing_system/services/auth.dart';
-import 'package:billing_system/shared/loading.dart';
+import 'package:Billing/screens/account_register.dart';
+import 'package:Billing/services/auth.dart';
+import 'package:Billing/shared/loading.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:billing_system/services/database.dart';
+import 'package:Billing/services/database.dart';
 
 class Register extends StatefulWidget {
   @override
@@ -33,6 +33,8 @@ class _RegisterState extends State<Register> {
   String fssai = "";
   String gst = "";
   String tan = "";
+  String state = "";
+  String stateCode = "";
 
   TextEditingController emailInputController;
   TextEditingController pwdInputController;
@@ -46,6 +48,8 @@ class _RegisterState extends State<Register> {
   TextEditingController fssaiInputController;
   TextEditingController gstInputController;
   TextEditingController tanInputController;
+  TextEditingController stateInputController;
+  TextEditingController stateCodeInputController;
 
   String emailValidator(String value) {
     Pattern pattern =
@@ -81,8 +85,8 @@ class _RegisterState extends State<Register> {
     // TODO: implement initState
     super.initState();
     setState(() {
-      emailInputController = new TextEditingController();
-      pwdInputController = new TextEditingController();
+      emailInputController = new TextEditingController(text: "");
+      pwdInputController = new TextEditingController(text: "");
     });
   }
 
@@ -140,6 +144,7 @@ class _RegisterState extends State<Register> {
                                   color: Colors.blue[400],
                                 )),
                             controller: nameInputController,
+                            textCapitalization: TextCapitalization.characters,
                             style:
                                 TextStyle(color: Colors.black, fontSize: 17.0),
                           ),
@@ -242,6 +247,7 @@ class _RegisterState extends State<Register> {
                                 office_address = value;
                               });
                             },
+                            textCapitalization: TextCapitalization.sentences,
                             decoration: InputDecoration(
                                 labelText: "Office Address",
                                 hintText: "Name, Locality, City, Pincode",
@@ -269,6 +275,52 @@ class _RegisterState extends State<Register> {
                                   color: Colors.blue[400],
                                 )),
                             controller: factoryAddressInputControler,
+                            textCapitalization: TextCapitalization.sentences,
+                            style:
+                                TextStyle(color: Colors.black, fontSize: 17.0),
+                          ),
+                          SizedBox(
+                            height: 50,
+                          ),
+                          Text(
+                            'State Details',
+                            style: TextStyle(fontSize: 20),
+                          ),
+                          TextFormField(
+                            onChanged: (value) {
+                              setState(() {
+                                state = value;
+                              });
+                            },
+                            decoration: InputDecoration(
+                                labelText: "State",
+                                hintText: "",
+                                labelStyle: TextStyle(color: Colors.black),
+                                prefixIcon: Icon(
+                                  Icons.location_on,
+                                  color: Colors.blue[400],
+                                )),
+                            controller: stateInputController,
+                            textCapitalization: TextCapitalization.sentences,
+                            style:
+                                TextStyle(color: Colors.black, fontSize: 17.0),
+                          ),
+                          TextFormField(
+                            onChanged: (value) {
+                              setState(() {
+                                stateCode = value;
+                              });
+                            },
+                            decoration: InputDecoration(
+                                labelText: "State Code",
+                                hintText: "15",
+                                labelStyle: TextStyle(color: Colors.black),
+                                prefixIcon: Icon(
+                                  Icons.location_on,
+                                  color: Colors.blue[400],
+                                )),
+                            controller: stateCodeInputController,
+                            keyboardType: TextInputType.number,
                             style:
                                 TextStyle(color: Colors.black, fontSize: 17.0),
                           ),
@@ -298,12 +350,14 @@ class _RegisterState extends State<Register> {
                                 hintText: "xxxxxxxxxxxxxx",
                                 labelStyle: TextStyle(color: Colors.black)),
                             style: TextStyle(color: Colors.black, fontSize: 17),
+                            textCapitalization: TextCapitalization.characters,
                           ),
                           TextFormField(
                             validator: (val) => val.length != 15
                                 ? "Enter a 15 Digit GST Number"
                                 : null,
                             controller: gstInputController,
+                            textCapitalization: TextCapitalization.characters,
                             onChanged: (value) {
                               setState(() {
                                 gst = value;
@@ -324,6 +378,7 @@ class _RegisterState extends State<Register> {
                                 ? "Enter a 10 Digit TAN Number"
                                 : null,
                             controller: tanInputController,
+                            textCapitalization: TextCapitalization.characters,
                             onChanged: (value) {
                               setState(() {
                                 tan = value;
@@ -430,7 +485,7 @@ class _RegisterState extends State<Register> {
                         if (result == null) {
                           setState(() {
                             error =
-                                'User not registered. Please check the details!';
+                                'Error while Registering. Please check the details!';
                             loading = false;
                           });
                         } else {
@@ -442,6 +497,8 @@ class _RegisterState extends State<Register> {
                                   factory_contact,
                                   office_contact,
                                   mobile_contact,
+                                  state,
+                                  stateCode,
                                   fssai,
                                   gst,
                                   tan,

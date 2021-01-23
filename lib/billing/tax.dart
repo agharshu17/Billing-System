@@ -1,6 +1,6 @@
 import 'dart:ffi';
 
-import 'package:billing_system/billing/tcs.dart';
+import 'package:Billing/billing/tcs.dart';
 import 'package:flutter/material.dart';
 
 class Taxation extends StatefulWidget {

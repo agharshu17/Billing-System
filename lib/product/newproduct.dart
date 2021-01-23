@@ -1,9 +1,9 @@
-import 'package:billing_system/screens/dialog.dart';
+import 'package:Billing/screens/dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:billing_system/services/database.dart';
+import 'package:Billing/services/database.dart';
 
 class NewProduct extends StatefulWidget {
   final String email;
@@ -91,6 +91,7 @@ class _RegisterState extends State<NewProduct> {
                             color: Colors.blue[400],
                           )),
                       controller: nameInputController,
+                      textCapitalization: TextCapitalization.characters,
                       style: TextStyle(color: Colors.black, fontSize: 17.0),
                     ),
                     TextFormField(
@@ -119,6 +120,7 @@ class _RegisterState extends State<NewProduct> {
                             Icons.label_important,
                             color: Colors.blue[400],
                           )),
+                      textCapitalization: TextCapitalization.characters,
                       controller: brandInputController,
                       style: TextStyle(color: Colors.black, fontSize: 17.0),
                     ),
@@ -140,6 +142,7 @@ class _RegisterState extends State<NewProduct> {
                           )),
                       controller: hsnInputController,
                       style: TextStyle(color: Colors.black, fontSize: 17.0),
+                      textCapitalization: TextCapitalization.characters,
                     ),
                     SizedBox(
                       height: 50,

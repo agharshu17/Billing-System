@@ -1,12 +1,8 @@
-import 'dart:io';
-
-import 'package:billing_system/pdf/showDocuments.dart';
-import 'package:billing_system/shared/loading.dart';
+import 'package:Billing/pdf/showDocuments.dart';
+import 'package:Billing/shared/loading.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:pdf_flutter/pdf_flutter.dart';
+import 'dart:collection';
 
 class Documents extends StatefulWidget {
   final String email;
@@ -18,6 +14,8 @@ class Documents extends StatefulWidget {
 class _DocumentsState extends State<Documents> {
   List showKey = [], showValue = [];
   var urls = {};
+  SplayTreeMap<dynamic, dynamic> st = SplayTreeMap<dynamic, dynamic>();
+
   bool loading = true;
   @override
   void initState() {
@@ -36,7 +34,11 @@ class _DocumentsState extends State<Documents> {
         .then((value) {
       urls = value.data()['FilePath'];
       List tempKey = [], tempValue = [];
+
       urls.forEach((key, value) {
+        st[key] = value;
+      });
+      st.forEach((key, value) {
         tempKey.add(key);
         tempValue.add(value);
       });

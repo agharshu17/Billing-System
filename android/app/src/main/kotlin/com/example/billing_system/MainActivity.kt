@@ -1,4 +1,4 @@
-package com.example.billing_system
+package com.example.Billing
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -1,6 +1,6 @@
-import 'package:billing_system/profile/account.dart';
-import 'package:billing_system/profile/company.dart';
-import 'package:billing_system/profile/terms.dart';
+import 'package:Billing/profile/account.dart';
+import 'package:Billing/profile/company.dart';
+import 'package:Billing/profile/terms.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';

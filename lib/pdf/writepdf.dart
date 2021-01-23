@@ -1,5 +1,5 @@
-import 'package:billing_system/pdf/createpdf.dart';
-import 'package:billing_system/services/databasepdf.dart';
+import 'package:Billing/pdf/createpdf.dart';
+import 'package:Billing/services/databasepdf.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:number_to_words/number_to_words.dart';
@@ -99,9 +99,9 @@ reportView(context, email, partyName, brokerName, invoice, productList,
                                   style: TextStyle(fontSize: 10)),
                               Text('FSSAI: ${value.companyFssai}',
                                   style: TextStyle(fontSize: 10)),
-                              Text('State: Maharashtra',
+                              Text('State: ${value.companyState}',
                                   style: TextStyle(fontSize: 10)),
-                              Text('State Code: 27',
+                              Text('State Code: ${value.companyStateCode}',
                                   style: TextStyle(fontSize: 10)),
                             ],
                           ),
@@ -193,8 +193,10 @@ reportView(context, email, partyName, brokerName, invoice, productList,
                           style: TextStyle(fontSize: 10)),
                       Text('Mobile: ${value.partyMobileContact}',
                           style: TextStyle(fontSize: 10)),
-                      Text('State: ', style: TextStyle(fontSize: 10)),
-                      Text('State Code: ', style: TextStyle(fontSize: 10)),
+                      Text('State: ${value.partyState}',
+                          style: TextStyle(fontSize: 10)),
+                      Text('State Code: ${value.partyStateCode}',
+                          style: TextStyle(fontSize: 10)),
                       Text('GSTIN: ${value.partyGst}',
                           style: TextStyle(fontSize: 10)),
                       Text('FSSAI: ${value.partyFssai}',
@@ -373,6 +375,29 @@ reportView(context, email, partyName, brokerName, invoice, productList,
                     right: BorderSide(width: .75),
                     left: BorderSide(width: .75),
                     verticalInside: BorderSide(width: .75)),
+              ),
+            ])),
+            Container(
+                child: Row(children: <Widget>[
+              Table(
+                children: [
+                  TableRow(children: [
+                    Text("Sign", style: TextStyle(fontSize: 10)),
+                    Text("Sign", style: TextStyle(fontSize: 10)),
+                    Text("Sign", style: TextStyle(fontSize: 10)),
+                  ]),
+                  TableRow(children: [
+                    Text("Transport Agent", style: TextStyle(fontSize: 10)),
+                    Text("Customer", style: TextStyle(fontSize: 10)),
+                    Text("${value.companyName}",
+                        style: TextStyle(fontSize: 10)),
+                  ]),
+                ],
+                columnWidths: {
+                  0: FlexColumnWidth(1),
+                  1: FlexColumnWidth(1),
+                  2: FlexColumnWidth(1),
+                },
               ),
             ]))
           ]));

@@ -1,5 +1,5 @@
-import 'package:billing_system/services/database.dart';
-import 'package:billing_system/shared/loading.dart';
+import 'package:Billing/services/database.dart';
+import 'package:Billing/shared/loading.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 

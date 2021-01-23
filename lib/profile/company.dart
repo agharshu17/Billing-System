@@ -1,5 +1,5 @@
-import 'package:billing_system/services/database.dart';
-import 'package:billing_system/shared/loading.dart';
+import 'package:Billing/services/database.dart';
+import 'package:Billing/shared/loading.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
@@ -31,6 +31,8 @@ class _CompanyState extends State<Company> {
   TextEditingController fssaiInputController;
   TextEditingController gstInputController;
   TextEditingController tanInputController;
+  TextEditingController stateInputController;
+  TextEditingController stateCodeInputController;
   bool _isEnabled;
 
   String email;
@@ -43,6 +45,8 @@ class _CompanyState extends State<Company> {
   String fssai;
   String gst;
   String tan;
+  String state;
+  String stateCode;
 
   @override
   void initState() {
@@ -74,6 +78,10 @@ class _CompanyState extends State<Company> {
           TextEditingController(text: info['Tax']['FSSAI No.']);
       gstInputController = TextEditingController(text: info['Tax']['GST No.']);
       tanInputController = TextEditingController(text: info['Tax']['TAN No.']);
+      stateInputController =
+          TextEditingController(text: info['State']['Value']);
+      stateCodeInputController =
+          TextEditingController(text: info['State']['Code']);
       _isEnabled = false;
 
       email = info['Email'];
@@ -86,6 +94,8 @@ class _CompanyState extends State<Company> {
       fssai = info['Tax']['FSSAI No.'];
       gst = info['Tax']['GST No.'];
       tan = info['Tax']['TAN No.'];
+      state = info['State']['Value'];
+      stateCode = info['State']['Code'];
       loading = false;
     });
   }
@@ -153,6 +163,7 @@ class _CompanyState extends State<Company> {
                                 )),
                             controller: nameInputController,
                             enabled: _isEnabled,
+                            textCapitalization: TextCapitalization.characters,
                             style:
                                 TextStyle(color: Colors.black, fontSize: 17.0),
                           ),
@@ -281,6 +292,49 @@ class _CompanyState extends State<Company> {
                             style:
                                 TextStyle(color: Colors.black, fontSize: 17.0),
                           ),
+                          Text(
+                            'State Details',
+                            style: TextStyle(fontSize: 20),
+                          ),
+                          TextFormField(
+                            onChanged: (value) {
+                              setState(() {
+                                state = value;
+                              });
+                            },
+                            decoration: InputDecoration(
+                                labelText: "State",
+                                hintText: "",
+                                labelStyle: TextStyle(color: Colors.black),
+                                prefixIcon: Icon(
+                                  Icons.location_on,
+                                  color: Colors.blue[400],
+                                )),
+                            controller: stateInputController,
+                            enabled: _isEnabled,
+                            style:
+                                TextStyle(color: Colors.black, fontSize: 17.0),
+                          ),
+                          TextFormField(
+                            onChanged: (value) {
+                              setState(() {
+                                stateCode = value;
+                              });
+                            },
+                            enabled: _isEnabled,
+                            decoration: InputDecoration(
+                                labelText: "State Code",
+                                hintText: "15",
+                                labelStyle: TextStyle(color: Colors.black),
+                                prefixIcon: Icon(
+                                  Icons.location_on,
+                                  color: Colors.blue[400],
+                                )),
+                            controller: stateCodeInputController,
+                            keyboardType: TextInputType.number,
+                            style:
+                                TextStyle(color: Colors.black, fontSize: 17.0),
+                          ),
                           SizedBox(
                             height: 50,
                           ),
@@ -293,6 +347,7 @@ class _CompanyState extends State<Company> {
                                 ? "Enter a 14 Digit FSSAI Number"
                                 : null,
                             enabled: _isEnabled,
+                            textCapitalization: TextCapitalization.characters,
                             controller: fssaiInputController,
                             onChanged: (value) {
                               setState(() {
@@ -317,6 +372,7 @@ class _CompanyState extends State<Company> {
                                 : null,
                             controller: gstInputController,
                             enabled: _isEnabled,
+                            textCapitalization: TextCapitalization.characters,
                             onChanged: (value) {
                               setState(() {
                                 gst = value;
@@ -340,6 +396,7 @@ class _CompanyState extends State<Company> {
                                 : null,
                             controller: tanInputController,
                             enabled: _isEnabled,
+                            textCapitalization: TextCapitalization.characters,
                             onChanged: (value) {
                               setState(() {
                                 tan = value;
@@ -391,6 +448,8 @@ class _CompanyState extends State<Company> {
                         factory_contact,
                         office_contact,
                         mobile_contact,
+                        state,
+                        stateCode,
                         fssai,
                         gst,
                         tan);

@@ -1,7 +1,7 @@
 import 'dart:ffi';
 
-import 'package:billing_system/services/database.dart';
-import 'package:billing_system/shared/loading.dart';
+import 'package:Billing/services/database.dart';
+import 'package:Billing/shared/loading.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
@@ -29,6 +29,8 @@ class _EditExistingPartyState extends State<EditExistingParty> {
   TextEditingController mobileContactInputController;
   TextEditingController fssaiInputController;
   TextEditingController gstInputController;
+  TextEditingController stateInputController;
+  TextEditingController stateCodeInputController;
   bool _isEnabled;
 
   String email;
@@ -38,6 +40,8 @@ class _EditExistingPartyState extends State<EditExistingParty> {
   String mobile_contact;
   String fssai;
   String gst;
+  String state;
+  String stateCode;
 
   @override
   void initState() {
@@ -66,6 +70,10 @@ class _EditExistingPartyState extends State<EditExistingParty> {
       fssaiInputController =
           TextEditingController(text: info['Tax']['FSSAI No.']);
       gstInputController = TextEditingController(text: info['Tax']['GST No.']);
+      stateInputController =
+          TextEditingController(text: info['State']['Value']);
+      stateCodeInputController =
+          TextEditingController(text: info['State']['Code']);
       _isEnabled = false;
       email = info['Email'];
       name = info['Name'];
@@ -74,6 +82,8 @@ class _EditExistingPartyState extends State<EditExistingParty> {
       mobile_contact = info['Contact']['Mobile'];
       fssai = info['Tax']['FSSAI No.'];
       gst = info['Tax']['GST No.'];
+      state = info['State']['Value'];
+      stateCode = info['State']['Code'];
       loading = false;
     });
   }
@@ -235,6 +245,49 @@ class _EditExistingPartyState extends State<EditExistingParty> {
                             style:
                                 TextStyle(color: Colors.black, fontSize: 17.0),
                           ),
+                          Text(
+                            'State Details',
+                            style: TextStyle(fontSize: 20),
+                          ),
+                          TextFormField(
+                            onChanged: (value) {
+                              setState(() {
+                                state = value;
+                              });
+                            },
+                            decoration: InputDecoration(
+                                labelText: "State",
+                                hintText: "",
+                                labelStyle: TextStyle(color: Colors.black),
+                                prefixIcon: Icon(
+                                  Icons.location_on,
+                                  color: Colors.blue[400],
+                                )),
+                            controller: stateInputController,
+                            enabled: _isEnabled,
+                            style:
+                                TextStyle(color: Colors.black, fontSize: 17.0),
+                          ),
+                          TextFormField(
+                            onChanged: (value) {
+                              setState(() {
+                                stateCode = value;
+                              });
+                            },
+                            enabled: _isEnabled,
+                            decoration: InputDecoration(
+                                labelText: "State Code",
+                                hintText: "15",
+                                labelStyle: TextStyle(color: Colors.black),
+                                prefixIcon: Icon(
+                                  Icons.location_on,
+                                  color: Colors.blue[400],
+                                )),
+                            controller: stateCodeInputController,
+                            keyboardType: TextInputType.number,
+                            style:
+                                TextStyle(color: Colors.black, fontSize: 17.0),
+                          ),
                           SizedBox(
                             height: 50,
                           ),
@@ -264,6 +317,7 @@ class _EditExistingPartyState extends State<EditExistingParty> {
                                     FloatingLabelBehavior.always,
                                 labelStyle: TextStyle(color: Colors.black)),
                             style: TextStyle(color: Colors.black, fontSize: 17),
+                            textCapitalization: TextCapitalization.sentences,
                           ),
                           TextFormField(
                             validator: (val) => val.length != 15
@@ -286,6 +340,7 @@ class _EditExistingPartyState extends State<EditExistingParty> {
                                 floatingLabelBehavior:
                                     FloatingLabelBehavior.always,
                                 labelStyle: TextStyle(color: Colors.black)),
+                            textCapitalization: TextCapitalization.sentences,
                             style: TextStyle(color: Colors.black, fontSize: 17),
                           ),
                           SizedBox(
@@ -316,8 +371,16 @@ class _EditExistingPartyState extends State<EditExistingParty> {
                     icon = Icons.edit;
                     print('edit');
                     Database(email: widget.email)
-                        .createNewParty(name, email, office_address,
-                            office_contact, mobile_contact, fssai, gst)
+                        .createNewParty(
+                            name,
+                            email,
+                            office_address,
+                            office_contact,
+                            mobile_contact,
+                            state,
+                            stateCode,
+                            fssai,
+                            gst)
                         .then((value) => print('success'));
                   });
                 }

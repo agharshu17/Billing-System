@@ -1,5 +1,5 @@
-import 'package:billing_system/models/user.dart';
-import 'package:billing_system/services/database.dart';
+import 'package:Billing/models/user.dart';
+import 'package:Billing/services/database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class AuthService {

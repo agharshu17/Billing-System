@@ -1,7 +1,7 @@
-import 'package:billing_system/models/profile_var.dart';
-import 'package:billing_system/models/user.dart';
-import 'package:billing_system/screens/account_register.dart';
-import 'package:billing_system/screens/wrapper.dart';
+import 'package:Billing/models/profile_var.dart';
+import 'package:Billing/models/user.dart';
+import 'package:Billing/screens/account_register.dart';
+import 'package:Billing/screens/wrapper.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -13,8 +13,19 @@ class Database {
   final CollectionReference company =
       FirebaseFirestore.instance.collection('Company');
 
-  Future storecompanyinfo(name, factoryAddress, officeAddress, factoryContact,
-      officeContact, mobileContact, fssai, gst, tan, context) async {
+  Future storecompanyinfo(
+      name,
+      factoryAddress,
+      officeAddress,
+      factoryContact,
+      officeContact,
+      mobileContact,
+      state,
+      stateCode,
+      fssai,
+      gst,
+      tan,
+      context) async {
     print("entered database");
     await company.doc(email).set({
       "Name": name,
@@ -25,7 +36,8 @@ class Database {
         "Factory": factoryContact
       },
       "Email": email,
-      "Tax": {"GST No.": gst, "FSSAI No.": fssai, "TAN No.": tan}
+      "Tax": {"GST No.": gst, "FSSAI No.": fssai, "TAN No.": tan},
+      "State": {"Value": state, "Code": stateCode}
     }, SetOptions(merge: true));
   }
 
@@ -54,7 +66,7 @@ class Database {
   }
 
   Future updateCompany(name, factoryAddress, officeAddress, factoryContact,
-      officeContact, mobileContact, fssai, gst, tan) async {
+      officeContact, mobileContact, state, stateCode, fssai, gst, tan) async {
     await company.doc(email).update({
       "Name": name,
       "Address": {"Office": officeAddress, "Factory": factoryAddress},
@@ -64,14 +76,15 @@ class Database {
         "Factory": factoryContact
       },
       "Email": email,
-      "Tax": {"GST No.": gst, "FSSAI No.": fssai, "TAN No.": tan}
+      "Tax": {"GST No.": gst, "FSSAI No.": fssai, "TAN No.": tan},
+      "State": {"Value": state, "Code": stateCode}
     }).catchError((e) {
       print(e);
     });
   }
 
   Future createNewParty(name, emailParty, officeAddress, officeContact,
-      mobileContact, fssai, gst) async {
+      mobileContact, state, stateCode, fssai, gst) async {
     company.doc(email).collection('Party Name').doc(name).set({
       "Name": name,
       "Address": {
@@ -86,6 +99,7 @@ class Database {
         "GST No.": gst,
         "FSSAI No.": fssai,
       },
+      "State": {"Value": state, "Code": stateCode}
     }, SetOptions(merge: true));
   }
 
